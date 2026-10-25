@@ -1,0 +1,9 @@
+.state {
+  padding: var(--spacing);
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.error {
+  color: var(--color-danger);
+}
