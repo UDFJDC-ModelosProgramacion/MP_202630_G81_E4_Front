@@ -5,8 +5,17 @@ pipeline {
       stage('Checkout') {
          steps { checkout scm }
       }
-      stage('Node') {
-         steps { sh 'node -v && npm -v' }
+      stage('Install') {
+         steps { sh 'node -v && npm ci' }
+      }
+      stage('Lint') {
+         steps { sh 'npm run lint' }
+      }
+      stage('Build') {
+         steps { sh 'npm run build' }
+      }
+      stage('Testing') {
+         steps { sh 'npm run test:coverage' }
       }
       stage('Static Analysis') {
          steps {
