@@ -4,11 +4,8 @@ import styles from './Navbar.module.css'
 const LINKS = [
   { path: '/pets', label: 'Mascotas' },
   { path: '/adoptions', label: 'Adopciones' },
-  { path: '/adoption-requests', label: 'Solicitudes' },
   { path: '/shelters', label: 'Refugios' },
   { path: '/notifications', label: 'Notificaciones' },
-  { path: '/messages', label: 'Mensajes' },
-  { path: '/profile', label: 'Mi perfil' },
 ]
 
 export default function Navbar() {

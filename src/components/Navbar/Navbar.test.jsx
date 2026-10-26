@@ -19,14 +19,4 @@ describe('Navbar', () => {
       '/notifications',
     )
   })
-
-  it('shows the links to messages and the adopter profile', () => {
-    render(
-      <MemoryRouter>
-        <Navbar />
-      </MemoryRouter>,
-    )
-    expect(screen.getByRole('link', { name: 'Mensajes' })).toHaveAttribute('href', '/messages')
-    expect(screen.getByRole('link', { name: 'Mi perfil' })).toHaveAttribute('href', '/profile')
-  })
 })

@@ -1,55 +1,16 @@
-# Pets – Front-end
+# React + Vite
 
-Aplicación web para gestionar adopciones de mascotas. Proyecto de Modelos de Programación, Universidad Distrital, grupo G81.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Tecnologías
+Currently, two official plugins are available:
 
-- React + Vite
-- JavaScript (JSX)
-- React Router
-- CSS Modules
-- Vitest y React Testing Library
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Requisitos
+## React Compiler
 
-- Node.js compatible con la versión de Vite definida en `package.json`.
-- Backend Spring Boot ejecutándose en `http://localhost:8080`.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Instalación y ejecución
+## Expanding the ESLint configuration
 
-```bash
-npm ci
-npm run dev
-```
-
-Abre la URL que muestre Vite (normalmente `http://localhost:5173`). La configuración de Vite reenvía las peticiones `/api` a `http://localhost:8080`.
-
-## Scripts
-
-```bash
-npm test
-npm run test:coverage
-npm run lint
-npm run build
-```
-
-## HU03 – Gestionar solicitud de adopción
-
-Ruta: `/adoption-requests`.
-
-La pantalla permite consultar las solicitudes de adopción, buscar por adoptante/mascota/código, filtrar por estado o mascota, aprobar y cancelar solicitudes pendientes, y editar la fecha y descripción de una solicitud pendiente. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
-
-### Pruebas manuales sugeridas
-
-1. Iniciar el backend y ejecutar `npm run dev`.
-2. Abrir `/adoption-requests` y comprobar que se cargue la lista.
-3. Buscar por nombre de adoptante o mascota y aplicar los filtros.
-4. Aprobar una solicitud pendiente válida y comprobar el cambio de estado.
-5. Intentar aprobar una solicitud cuyo adoptante tenga una adopción activa; comprobar que se muestre el error del backend.
-6. Cancelar una solicitud pendiente y comprobar que ya no aparezcan acciones de edición.
-7. Editar la fecha o descripción de una solicitud pendiente y guardar.
-8. Apagar el backend y comprobar que la pantalla muestre un error y permita reintentar.
-
-## Integración con Git
-
-Desarrollar la HU03 en `feature/HU03`. Crear un Pull Request hacia `Develop` y solicitar la revisión de un compañero antes de fusionar.
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
