@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getAvailablePets } from '../../services/petService';
 import styles from './PetsPage.module.css';
 
