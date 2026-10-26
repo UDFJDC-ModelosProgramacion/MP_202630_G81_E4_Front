@@ -6,6 +6,8 @@ const LINKS = [
   { path: '/adoptions', label: 'Adopciones' },
   { path: '/shelters', label: 'Refugios' },
   { path: '/notifications', label: 'Notificaciones' },
+  { path: '/messages', label: 'Mensajes' },
+  { path: '/profile', label: 'Mi perfil' },
 ]
 
 export default function Navbar() {
