@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
+import AdoptionRequestPage from './pages/AdoptionRequestPage/AdoptionRequestPage'
+import MessagesPage from './pages/MessagesPage/MessagesPage'
+import ProfilePage from './pages/ProfilePage/ProfilePage'
 import AdoptionRequestsPage from './features/adoption-requests/AdoptionRequestsPage';
 
 function Pending({ title }) {
@@ -17,6 +20,9 @@ export default function App() {
         <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
         <Route path="/shelters" element={<Pending title="Refugios" />} />
         <Route path="/notifications" element={<Pending title="Notificaciones" />} />
+        <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/adoptions/new" element={<AdoptionRequestPage />} />
       </Route>
     </Routes>
   )
