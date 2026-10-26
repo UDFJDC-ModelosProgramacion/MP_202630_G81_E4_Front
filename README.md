@@ -37,19 +37,32 @@ npm run build
 
 Ruta: `/adoption-requests`.
 
-La pantalla permite consultar las solicitudes de adopción, buscar por adoptante/mascota/código, filtrar por estado o mascota, aprobar y cancelar solicitudes pendientes, y editar la fecha y descripción de una solicitud pendiente. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+La pantalla permite consultar y visualizar las solicitudes de adopción, buscar por adoptante, mascota o código de solicitud, filtrar por estado o mascota y acceder a las opciones de gestión disponibles en la interfaz, como aprobar, cancelar y editar solicitudes pendientes.
 
-### Pruebas manuales sugeridas
+Estado de integración: La conexión con el backend está pendiente. Por lo tanto, las operaciones de consulta, aprobación, cancelación y edición aún no están verificadas mediante una integración completa con el servicio backend. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
 
-1. Iniciar el backend y ejecutar `npm run dev`.
-2. Abrir `/adoption-requests` y comprobar que se cargue la lista.
-3. Buscar por nombre de adoptante o mascota y aplicar los filtros.
-4. Aprobar una solicitud pendiente válida y comprobar el cambio de estado.
-5. Intentar aprobar una solicitud cuyo adoptante tenga una adopción activa; comprobar que se muestre el error del backend.
-6. Cancelar una solicitud pendiente y comprobar que ya no aparezcan acciones de edición.
-7. Editar la fecha o descripción de una solicitud pendiente y guardar.
-8. Apagar el backend y comprobar que la pantalla muestre un error y permita reintentar.
+### Ejecución de pruebas:
+npm test
+### Ejecución de pruebas con cobertura:
+npm run test:coverage
+### Pruebas manuales pendientes de integración
 
-## Integración con Git
+Una vez conectado el frontend con el backend, se deberán verificar los siguientes escenarios:
 
-Desarrollar la HU03 en `feature/HU03`. Crear un Pull Request hacia `Develop` y solicitar la revisión de un compañero antes de fusionar.
+1.Iniciar el backend y ejecutar npm run dev.
+
+2.Abrir /adoption-requests y comprobar que se carguen las solicitudes reales.
+
+3.Buscar por nombre de adoptante, mascota o código y aplicar los filtros.
+
+4.Aprobar una solicitud pendiente válida y verificar el cambio de estado en el backend.
+
+5.Intentar aprobar una solicitud cuyo adoptante ya tenga una adopción activa y verificar el mensaje de error devuelto por el backend.
+
+6.Cancelar una solicitud pendiente y comprobar que se actualice su estado.
+
+7.Editar la fecha o descripción de una solicitud pendiente y verificar que los cambios persistan.
+
+8.Desconectar el backend y comprobar el manejo del error de conexión y la opción de reintentar.
+
+
