@@ -44,8 +44,9 @@ export default function ShelterManager() {
   }
 
   useEffect(() => {
-    load()
-  }, [])
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  load()
+}, [])
 
   function handleChange(event) {
     const { name, value } = event.target
