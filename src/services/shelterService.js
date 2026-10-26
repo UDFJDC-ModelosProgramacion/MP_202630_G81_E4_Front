@@ -42,7 +42,7 @@ const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms))
 export async function getShelters() {
   try {
     return await api.get('/shelters')
-  } catch (err) {
+  } catch {
     await delay()
     return [...mockShelters]
   }
@@ -51,7 +51,7 @@ export async function getShelters() {
 export async function getShelterById(id) {
   try {
     return await api.get(`/shelters/${id}`)
-  } catch (err) {
+  } catch {
     await delay()
     const found = mockShelters.find((s) => s.id === Number(id))
     if (!found) {
@@ -92,7 +92,7 @@ function validate(payload, existingId = null) {
 export async function createShelter(payload) {
   try {
     return await api.post('/shelters', payload)
-  } catch (err) {
+  } catch {
     await delay()
     validate(payload)
     const newItem = { id: nextId++, ...payload, capacity: Number(payload.capacity) }
@@ -104,7 +104,7 @@ export async function createShelter(payload) {
 export async function updateShelter(id, payload) {
   try {
     return await api.put(`/shelters/${id}`, payload)
-  } catch (err) {
+  } catch {
     await delay()
     const index = mockShelters.findIndex((s) => s.id === Number(id))
     if (index === -1) {
@@ -126,7 +126,7 @@ export async function updateShelter(id, payload) {
 export async function deleteShelter(id) {
   try {
     return await api.delete(`/shelters/${id}`)
-  } catch (err) {
+  } catch {
     await delay()
     const found = mockShelters.find((s) => s.id === Number(id))
     if (!found) {
