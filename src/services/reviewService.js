@@ -1,5 +1,4 @@
-import { CURRENT_ADOPTER } from '../config/currentUser'
-
+import { CURRENT_USER } from '../config/currentUser'
 // Sample data. When the back is connected, replace each function body
 // with a fetch to /api/... and keep the same signatures.
 const pets = {
@@ -42,10 +41,10 @@ export function createReview(petId, { rating, comment }) {
   if (!pets[petId]) {
     return fail('Mascota no encontrada')
   }
-  const review = {
+    const review = {
     id: nextId++,
-    adopterId: CURRENT_ADOPTER.id,
-    adopterName: CURRENT_ADOPTER.name,
+    adopterId: CURRENT_USER.adopterId,
+    adopterName: CURRENT_USER.name,
     rating,
     comment: comment.trim(),
     date: new Date().toISOString(),
