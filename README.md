@@ -1,17 +1,21 @@
-# React + Vite
+# Pets – Front-end
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para gestionar adopciones de mascotas. Proyecto de Modelos de Programación, Universidad Distrital, grupo G81.
 
-Currently, two official plugins are available:
+## Tecnologías
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React + Vite
+- JavaScript (JSX)
+- React Router
+- CSS Modules
+- Vitest y React Testing Library
 
-## React Compiler
+## Requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js compatible con la versión de Vite definida en `package.json`.
+- Backend Spring Boot ejecutándose en `http://localhost:8080`.
 
-## Expanding the ESLint configuration
+## Instalación y ejecución
 
 ```bash
 npm ci

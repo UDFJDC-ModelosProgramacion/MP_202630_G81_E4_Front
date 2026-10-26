@@ -17,10 +17,14 @@ export default function App() {
       <Route element={<Layout />}>
         <Route path="/" element={<Pending title="Inicio" />} />
         <Route path="/pets" element={<Pending title="Mascotas" />} />
+        <Route path="/pets/:petId/reviews" element={<PetReviewsPage />} />
         <Route path="/adoptions" element={<Pending title="Adopciones" />} />
         <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
         <Route path="/shelters" element={<ShelterManager />} />
         <Route path="/notifications" element={<Pending title="Notificaciones" />} />
+        <Route path="/messages" element={<MessagesPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/adoptions/new" element={<AdoptionRequestPage />} />
       </Route>
     </Routes>
   )
