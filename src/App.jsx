@@ -5,11 +5,11 @@ import MessagesPage from './pages/MessagesPage/MessagesPage'
 import ProfilePage from './pages/ProfilePage/ProfilePage'
 import AdoptionRequestsPage from './features/adoption-requests/AdoptionRequestsPage';
 import PetReviewsPage from './pages/PetReviews/PetReviewsPage'
+import ShelterManager from './components/Shelter/ShelterManager'
 
 function Pending({ title }) {
   return <h1>{title} (pendiente)</h1>
 }
-
 // Each user story replaces the <Pending> of its own route (one line per story).
 export default function App() {
   return (
@@ -20,7 +20,7 @@ export default function App() {
         <Route path="/pets/:petId/reviews" element={<PetReviewsPage />} />
         <Route path="/adoptions" element={<Pending title="Adopciones" />} />
         <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
-        <Route path="/shelters" element={<Pending title="Refugios" />} />
+        <Route path="/shelters" element={<ShelterManager />} />
         <Route path="/notifications" element={<Pending title="Notificaciones" />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/profile" element={<ProfilePage />} />
