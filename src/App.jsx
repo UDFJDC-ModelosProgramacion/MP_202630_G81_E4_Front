@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
+import AdoptionRequestsPage from './features/adoption-requests/AdoptionRequestsPage';
 
 function Pending({ title }) {
   return <h1>{title} (pendiente)</h1>
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/" element={<Pending title="Inicio" />} />
         <Route path="/pets" element={<Pending title="Mascotas" />} />
         <Route path="/adoptions" element={<Pending title="Adopciones" />} />
+        <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
         <Route path="/shelters" element={<Pending title="Refugios" />} />
         <Route path="/notifications" element={<Pending title="Notificaciones" />} />
       </Route>
