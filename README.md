@@ -128,6 +128,7 @@ Una vez conectado el frontend con el backend, se deberán verificar los siguient
 
 8.Desconectar el backend y comprobar el manejo del error de conexión y la opción de reintentar.
 
+
 ## HU04 – Registrar adopción
 
 Ruta: `/adoptions`.
@@ -155,14 +156,10 @@ npx vitest run src/features/adoptions/AdoptionsPage.test.jsx
 ### Ejecución de pruebas con cobertura
 
 ```bash
-npm run test:coverage
+npx vitest run src/features/adoptions/AdoptionsPage.test.jsx --coverage
 ```
 
-La suite de HU04 cuenta con 27 pruebas automatizadas con Vitest y React Testing Library. La cobertura del comando general incluye los archivos de todas las funcionalidades del proyecto; por tanto, no debe interpretarse como cobertura exclusiva de HU04.
-
-### Pruebas manuales de integración
-
-Una vez iniciado el backend y el frontend, se deberán verificar los siguientes escenarios:
+### Pruebas manuales sugeridas
 
 1. Confirmar que exista al menos una solicitud de adopción con estado `APROBADO` en el backend.
 2. Abrir `/adoptions` desde la opción **Adopciones** del menú y comprobar que se carguen únicamente las solicitudes aprobadas.
@@ -172,6 +169,43 @@ Una vez iniciado el backend y el frontend, se deberán verificar los siguientes 
 6. Verificar que se muestre la confirmación del registro y que la información se actualice después de la operación.
 7. Probar el estado vacío cuando no existan solicitudes aprobadas y utilizar **Actualizar solicitudes** para volver a consultar.
 8. Desconectar el backend y comprobar que se muestre el mensaje de error de conexión.
+
+## HU07 – Registrar seguimientos veterinarios
+
+Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
+
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+
+### Pruebas manuales sugeridas
+
+1. Iniciar el backend y ejecutar `npm run dev`.
+2. Abrir `/follow-ups/new` y comprobar que se carguen los selects de adopciones activas, mascotas y veterinarios.
+3. Intentar guardar sin seleccionar adopción, mascota, veterinario o fecha; comprobar que se informe el campo faltante.
+4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
+5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
+6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
+7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
+9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+10. Apagar el backend y comprobar que la pantalla muestre un error.
+
+## HU07 – Registrar seguimientos veterinarios
+Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
+
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+
+### Pruebas manuales sugeridas
+1. Iniciar el backend y ejecutar `npm run dev`.
+2. Abrir `/follow-ups/new` y comprobar que se carguen los selects de adopciones activas, mascotas y veterinarios.
+3. Intentar guardar sin seleccionar adopción, mascota, veterinario o fecha; comprobar que se informe el campo faltante.
+4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
+5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
+6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
+7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
+9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+10. Apagar el backend y comprobar que la pantalla muestre un error.
+
 
 ## HU12 – Gestionar información del adoptante
 
