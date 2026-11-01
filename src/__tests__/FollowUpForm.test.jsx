@@ -13,6 +13,7 @@ function renderForm(route = '/follow-ups/new') {
       <Routes>
         <Route path="/follow-ups/new" element={<FollowUpForm />} />
         <Route path="/follow-ups/:id/edit" element={<FollowUpForm />} />
+        <Route path="/adoptions" element={<div>Adopciones</div>} />
       </Routes>
     </MemoryRouter>,
   )
@@ -127,4 +128,50 @@ describe('HU07 - FollowUpForm', () => {
       )
     })
   })
+
+    it('limpia el formulario al hacer clic en Limpiar', async () => {
+    const user = userEvent.setup()
+    renderForm()
+    await waitFor(() => screen.getByLabelText(/adopción activa/i))
+
+    await user.selectOptions(screen.getByLabelText(/adopción activa/i), 'AD-101')
+    await user.click(screen.getByRole('button', { name: /limpiar/i }))
+    expect(screen.getByLabelText(/adopción activa/i)).toHaveValue('')
+  })
+
+  it('navega a adopciones al hacer clic en Volver a adopciones', async () => {
+    const user = userEvent.setup()
+    renderForm()
+    await waitFor(() => screen.getByLabelText(/adopción activa/i))
+
+    await user.click(screen.getByRole('button', { name: /volver a adopciones/i }))
+    expect(await screen.findByText('Adopciones')).toBeInTheDocument()
+  })
+
+  it('actualiza un seguimiento en modo edición', async () => {
+    const user = userEvent.setup()
+    renderForm('/follow-ups/FU-001/edit')
+    await waitFor(() =>
+      screen.getByRole('heading', { name: /actualizar seguimiento veterinario/i }),
+    )
+
+    await user.clear(screen.getByLabelText(/notas/i))
+    await user.type(screen.getByLabelText(/notas/i), 'Nota actualizada')
+    await user.click(screen.getByRole('button', { name: /actualizar seguimiento/i }))
+
+    await waitFor(() => {
+      expect(service.updateFollowUp).toHaveBeenCalledWith(
+        'FU-001',
+        expect.objectContaining({ notes: 'Nota actualizada' }),
+      )
+    })
+    expect(await screen.findByRole('status')).toHaveTextContent(/actualizado correctamente/i)
+  })
+
+  it('muestra error cuando falla la carga de catálogos', async () => {
+    service.getActiveAdoptions.mockRejectedValueOnce(new Error('Error de red'))
+    renderForm()
+    expect(await screen.findByRole('alert')).toHaveTextContent(/error de red/i)
+  })
+
 })
