@@ -1,0 +1,46 @@
+.subtitle {
+  margin: -0.5rem 0 var(--spacing);
+  color: var(--color-text-muted);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--spacing);
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.confirm {
+  margin-bottom: var(--spacing);
+  padding: var(--spacing);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  background: var(--color-background);
+}
+
+.confirm p {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.error {
+  margin: var(--spacing) 0 0;
+  color: var(--color-danger);
+}
+
+.success {
+  margin: var(--spacing) 0 0;
+  color: var(--badge-success-text);
+  font-weight: 600;
+}

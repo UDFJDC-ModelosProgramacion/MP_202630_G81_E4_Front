@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import PetReviewsPage from './PetReviewsPage'
@@ -74,5 +74,41 @@ describe('PetReviewsPage', () => {
 
     expect(await screen.findByText('Reseñas de Luna (2)')).toBeInTheDocument()
     expect(createReview).toHaveBeenCalledWith('1', { rating: 4, comment: 'Me encantó' })
+  })
+
+    it('ignores the data when the page is closed before they arrive', async () => {
+    let resolvePet
+    getPet.mockReturnValue(
+      new Promise((resolve) => {
+        resolvePet = resolve
+      }),
+    )
+    getReviews.mockResolvedValue(reviews)
+    const { container, unmount } = renderPage()
+
+    unmount()
+    await act(async () => {
+      resolvePet(pet)
+    })
+
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('ignores the error when the page is closed before it arrives', async () => {
+    let rejectPet
+    getPet.mockReturnValue(
+      new Promise((_, reject) => {
+        rejectPet = reject
+      }),
+    )
+    getReviews.mockResolvedValue(reviews)
+    const { container, unmount } = renderPage()
+
+    unmount()
+    await act(async () => {
+      rejectPet(new Error('fail'))
+    })
+
+    expect(container).toBeEmptyDOMElement()
   })
 })
