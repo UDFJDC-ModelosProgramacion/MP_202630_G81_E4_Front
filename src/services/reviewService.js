@@ -11,6 +11,15 @@ const pets = {
     size: 'Mediano',
     status: 'Disponible para adopción',
   },
+    2: {
+    id: 2,
+    name: 'Max',
+    breed: 'Beagle',
+    age: '4 años',
+    sex: 'Macho',
+    size: 'Pequeño',
+    status: 'Disponible para adopción',
+  },
 }
 
 const reviewsByPet = {

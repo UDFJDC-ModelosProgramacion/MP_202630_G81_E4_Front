@@ -9,6 +9,7 @@ import AdoptionsPage from './features/adoptions/AdoptionsPage'
 import PetReviewsPage from './pages/PetReviews/PetReviewsPage'
 import ShelterManager from './components/Shelter/ShelterManager'
 import FollowUpForm from './components/FollowUp/FollowUpForm'
+import VeterinariansPage from './pages/Veterinarians/VeterinariansPage'
 
 function Pending({ title }) {
   return <h1>{title} (pendiente)</h1>
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/adoptions" element={<AdoptionsPage />} />
         <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
         <Route path="/shelters" element={<ShelterManager />} />
+                <Route path="/shelters/:shelterId/veterinarians" element={<VeterinariansPage />} />
         <Route path="/notifications" element={<Pending title="Notificaciones" />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/profile" element={<ProfilePage />} />
