@@ -84,7 +84,7 @@ export default function AdoptionsPage() {
 
     const timer = setTimeout(() => {
       if (active) {
-        loadRequests()
+        void loadRequests()
       }
     }, 0)
 
