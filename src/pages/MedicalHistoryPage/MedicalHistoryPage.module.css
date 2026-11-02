@@ -1,0 +1,111 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.title {
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.breadcrumbs {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cardTitle {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+}
+
+.fieldGroup {
+  margin-bottom: 16px;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.fieldValue {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.petIcon {
+  font-size: 3rem;
+  text-align: center;
+  background-color: #f1f5f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.petName {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0 0 8px 0;
+}
+
+.petDetails {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.buttonOutline {
+  width: 100%;
+  padding: 8px;
+  margin-top: 16px;
+  background: transparent;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.messageBox {
+  padding: 16px;
+  background-color: #fef3c7;
+  color: #92400e;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.errorBox {
+  padding: 16px;
+  background-color: #fee2e2;
+  color: #991b1b;
+  border-radius: 8px;
+}
