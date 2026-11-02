@@ -32,4 +32,12 @@ describe('reviewService', () => {
       'Mascota no encontrada',
     )
   })
+
+    it('creates the first review of a pet that has none yet', async () => {
+    expect(await getReviews('2')).toEqual([])
+
+    const created = await createReview('2', { rating: 5, comment: 'Primera reseña' })
+
+    expect(await getReviews('2')).toEqual([created])
+  })
 })

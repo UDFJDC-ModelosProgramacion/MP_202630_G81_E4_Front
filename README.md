@@ -128,6 +128,114 @@ Una vez conectado el frontend con el backend, se deberán verificar los siguient
 
 8.Desconectar el backend y comprobar el manejo del error de conexión y la opción de reintentar.
 
+
+## HU04 – Registrar adopción
+
+Ruta: `/adoptions`.
+
+La pantalla permite formalizar el registro de una adopción a partir de una solicitud de adopción previamente aprobada. Consulta las solicitudes mediante el servicio de solicitudes y muestra únicamente las que tienen estado `APROBADO`. Al seleccionar una solicitud, presenta la información del adoptante y de la mascota asociada; el usuario selecciona la fecha de adopción y envía el registro. La adopción se crea con estado inicial `ACTIVA` y se relaciona con el adoptante y la mascota de la solicitud aprobada.
+
+La interfaz contempla los estados de carga, error y ausencia de solicitudes aprobadas, permite actualizar la lista y muestra mensajes de validación, error o confirmación durante el registro. Si no existen solicitudes aprobadas, informa que se necesita una solicitud aprobada para continuar.
+
+### Estado de integración
+
+La página está conectada en la aplicación mediante la ruta `/adoptions` y el enlace **Adopciones** del menú principal. El servicio `src/api/adoptions.js` está preparado para consumir el recurso `/adoptions`, y la página consulta las solicitudes a través del servicio de solicitudes. La integración de extremo a extremo con datos reales del backend aún debe verificarse; las pruebas de la página utilizan servicios simulados (mocks), por lo que sus resultados validan el comportamiento del frontend y no sustituyen la prueba contra el backend.
+
+### Ejecución de pruebas
+
+```bash
+npm test
+```
+
+Para ejecutar únicamente las pruebas de esta historia de usuario:
+
+```bash
+npx vitest run src/features/adoptions/AdoptionsPage.test.jsx
+```
+
+### Ejecución de pruebas con cobertura
+
+```bash
+npx vitest run src/features/adoptions/AdoptionsPage.test.jsx --coverage
+```
+
+### Pruebas manuales sugeridas
+
+1. Confirmar que exista al menos una solicitud de adopción con estado `APROBADO` en el backend.
+2. Abrir `/adoptions` desde la opción **Adopciones** del menú y comprobar que se carguen únicamente las solicitudes aprobadas.
+3. Seleccionar una solicitud y comprobar que se muestren el adoptante y la mascota asociados.
+4. Seleccionar una fecha válida y registrar la adopción.
+5. Comprobar que el frontend envíe la creación al recurso `/api/adoptions` y que el backend responda correctamente.
+6. Verificar que se muestre la confirmación del registro y que la información se actualice después de la operación.
+7. Probar el estado vacío cuando no existan solicitudes aprobadas y utilizar **Actualizar solicitudes** para volver a consultar.
+8. Desconectar el backend y comprobar que se muestre el mensaje de error de conexión.
+
+
+
+## HU07 – Registrar seguimientos veterinarios
+
+Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
+
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+
+### Pruebas manuales sugeridas
+
+1. Iniciar el backend y ejecutar `npm run dev`.
+2. Abrir `/follow-ups/new` y comprobar que se carguen los selects de adopciones activas, mascotas y veterinarios.
+3. Intentar guardar sin seleccionar adopción, mascota, veterinario o fecha; comprobar que se informe el campo faltante.
+4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
+5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
+6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
+7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
+9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+10. Apagar el backend y comprobar que la pantalla muestre un error.
+
+## HU07 – Registrar seguimientos veterinarios
+Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
+
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+
+### Pruebas manuales sugeridas
+1. Iniciar el backend y ejecutar `npm run dev`.
+2. Abrir `/follow-ups/new` y comprobar que se carguen los selects de adopciones activas, mascotas y veterinarios.
+3. Intentar guardar sin seleccionar adopción, mascota, veterinario o fecha; comprobar que se informe el campo faltante.
+4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
+5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
+6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
+7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
+9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+10. Apagar el backend y comprobar que la pantalla muestre un error.
+
+## HU09 – Consultar historial médico
+**Ruta:** `/pets/:petId/medical-history`
+
+La pantalla permite consultar en modo de solo lectura el historial médico de una mascota específica. Despliega información clínica como esterilización, enfermedades registradas, tratamiento actual y datos básicos de la mascota.
+
+Estado de integración
+La interfaz y la lógica del servicio (`medicalHistoryService.js`) están preparadas para consumir el endpoint `/pets/{id}/medical-history` del backend en Spring Boot. El comportamiento de la interfaz, el manejo de estados de error (HTTP 404) y la advertencia por ausencia de historial clínico se encuentran validados mediante pruebas automatizadas ejecutadas con Vitest y React Testing Library.
+
+Ejecución de pruebas
+Ejecución general:
+npm test
+
+Para ejecutar únicamente la suite de esta historia de usuario:
+npx vitest src/pages/MedicalHistoryPage
+
+Ejecución de pruebas con cobertura
+npm run test:coverage
+
+Pruebas manuales de integración
+
+Una vez iniciados el frontend y el backend, se deberán verificar los siguientes escenarios:
+1. Iniciar el backend en Spring Boot y ejecutar `npm run dev` en el proyecto del frontend.
+2. Acceder a la ruta con el ID de una mascota existente (ej. `/pets/1/medical-history`) y validar la renderización correcta del historial médico y los datos del animal.
+3. Ingresar un ID de mascota inexistente en la URL y comprobar que la interfaz despliega el mensaje de error: "La mascota indicada no fue encontrada."
+4. Consultar una mascota válida pero sin historial médico y verificar el mensaje preventivo en pantalla indicando que la mascota aún no posee registros médicos.
+5. Confirmar que no existan botones o formularios habilitados para modificar la información (modo de solo lectura).
+6. Desconectar el servidor backend y comprobar el manejo de errores de red en la pantalla.
+
 ## HU12 – Gestionar información del adoptante
 
 Ruta: `/profile`.
@@ -156,6 +264,14 @@ La pantalla permite registrar, consultar, actualizar y eliminar refugios. Se pue
 ## Integración con Git
 Desarrollar la HU13 en `feature/hu13-gestionar-refugios`. Crear un Pull Request hacia `develop` y solicitar la revisión de un compañero antes de fusionar.
 
+## HU14 – Gestionar veterinarios
+
+Ruta: `/shelters/1/veterinarians`. El número corresponde al id del refugio; con los datos de ejemplo actuales solo existe el refugio 1.
+
+La pantalla muestra el refugio y dos paneles: la tabla de veterinarios registrados (nombre, licencia y teléfono, con acciones Editar y Eliminar) y un formulario para registrar un veterinario. Los tres campos son obligatorios y, si falta alguno, se informa cuál. Al pulsar Editar, el mismo formulario carga los datos del veterinario para actualizarlos. Al pulsar Eliminar se pide confirmación y, una vez eliminado, el veterinario deja de aparecer en la lista. Si el refugio no existe, la pantalla informa que no fue encontrado. Contempla los estados de carga, error y lista vacía.
+
+Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/veterinarianService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
+
 ## HU15 – Registrar reseña de una mascota
 
 Ruta: `/pets/1/reviews`. El número corresponde al id de la mascota; con los datos de ejemplo actuales solo existe la mascota 1.
@@ -163,11 +279,3 @@ Ruta: `/pets/1/reviews`. El número corresponde al id de la mascota; con los dat
 La pantalla muestra la ficha de la mascota, un formulario para dejar una reseña (calificación de 1 a 5 con estrellas y comentario obligatorio, con mensajes que explican el motivo cuando los datos no son válidos) y la lista de reseñas de esa mascota con su total. Al enviar una reseña válida, esta aparece al inicio de la lista. La reseña se firma con el usuario actual fijo definido en `src/config/currentUser.js`.
 
 Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/reviewService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
-
-## HU17 – Gestionar mensajes
-
-Ruta: `/messages`.
-
-La pantalla tiene dos bandejas, Recibidos y Enviados, con la lista de mensajes de cada una (remitente o destinatario, vista previa del contenido, fecha y estado Leído / No leído). Al abrir un mensaje recibido que aún no ha sido leído, se marca como leído. El panel de detalle muestra remitente, destinatario, fecha, estado y contenido. El remitente solo puede editar un mensaje mientras no ha sido leído, y un mensaje solo se puede eliminar después de haber sido leído; en ambos casos la interfaz deshabilita el botón y explica el motivo. El formulario "Nuevo mensaje" permite elegir un destinatario (sin incluir al usuario actual) y escribir el contenido, que es obligatorio; si el envío falla, se muestra el motivo informado por el servicio. La pantalla contempla los estados de carga, error y bandeja vacía. El usuario actual es fijo y se toma de `src/config/currentUser.js`.
-
-Estado de integración: [completar].
