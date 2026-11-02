@@ -37,7 +37,7 @@ npm run build
 
 Las pruebas automatizadas se ejecutan en un pipeline de Jenkins (instalación, lint, build, pruebas con cobertura y análisis estático) y los resultados de calidad se revisan en SonarQube.
 
-Capturas del [DD/MM/AAAA], commit `[hash]`.
+Capturas del [01/11/2026], commit `[hash]`.
 
 ### Jenkins
 
