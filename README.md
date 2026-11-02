@@ -90,11 +90,52 @@ Una vez iniciados el frontend y el backend, se deberán verificar los siguientes
 
 ## HU02 – Registrar solicitud de adopción
 
-Ruta: `/adoptions/new`.
+Ruta: `/adoptions/new`. Opcionalmente, `/adoptions/new?petId=1` abre el formulario con esa mascota ya seleccionada.
 
-La pantalla permite al adoptante registrar una solicitud de adopción indicando la mascota, la fecha y una descripción. Valida los datos y, cuando la solicitud no se puede registrar, muestra el motivo. Una solicitud registrada se puede consultar con su adoptante, mascota, fecha y estado.
+La pantalla permite al adoptante registrar una solicitud de adopción indicando la mascota, la fecha y una descripción. El adoptante se toma del usuario actual fijo definido en `src/config/currentUser.js` y la solicitud se crea con estado `PENDIENTE`. Si la solicitud no se puede registrar (no se eligió una mascota válida, la mascota ya fue adoptada, falta la fecha o ya existe una solicitud pendiente para esa mascota), la pantalla muestra el motivo. Las solicitudes registradas se listan en "Mis solicitudes" con su mascota, fecha y estado. La pantalla contempla los estados de carga, error y lista vacía.
 
-Estado de integración: [completar].
+### Estado de integración
+
+La conexión con el backend está pendiente. La pantalla usa datos de ejemplo en memoria detrás de `src/services/adoptionRequestService.js` (y de `src/services/adopterService.js` para el adoptante), por lo que los datos se reinician al recargar la página. Al conectar el backend solo debe cambiar el cuerpo de las funciones de esos servicios (recurso `/api/adoption-requests`); los nombres de las funciones se conservan.
+
+Puntos a tener en cuenta al integrar:
+
+* El backend recibe el adoptante y la mascota como objetos (`adopter` y `pet`, cada uno con su `id`).
+* El backend no asigna el estado por sí mismo: la solicitud debe enviarse con estado `PENDIENTE`.
+* Algunos mensajes de error del backend están en inglés; la pantalla debe mostrar su equivalente en español.
+
+El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando los servicios en memoria.
+
+### Ejecución de pruebas
+
+```bash
+npm test
+```
+
+Para ejecutar únicamente las pruebas de esta historia de usuario:
+
+```bash
+npx vitest run src/pages/AdoptionRequestPage src/services/adoptionRequestService.test.js
+```
+
+### Ejecución de pruebas con cobertura
+
+```bash
+npm run test:coverage
+```
+
+### Pruebas manuales sugeridas
+
+Con los datos de ejemplo (usuario actual: María Gómez, ID 12). Los datos de ejemplo se reinician al recargar la página.
+
+1. Ejecutar `npm run dev` y abrir `/adoptions/new`. Comprobar que "Mis solicitudes" muestra tres solicitudes: Luna `PENDIENTE`, Max `APROBADO` y Nala `CANCELADO`.
+2. Pulsar **Enviar solicitud** sin elegir mascota; comprobar que se informe que se debe seleccionar una mascota válida.
+3. Elegir Max (ya adoptada) y enviar; comprobar que se informe que la mascota ya fue adoptada.
+4. Elegir Luna (ya tiene una solicitud pendiente) y enviar; comprobar que se informe que ya existe una solicitud pendiente para esa mascota.
+5. Elegir Toby, borrar la fecha y enviar; comprobar que se informe que la fecha es obligatoria.
+6. Elegir Toby, dejar la fecha, escribir una descripción y enviar; comprobar el mensaje "Solicitud registrada para Toby." y que la solicitud aparezca primera en "Mis solicitudes" con estado `PENDIENTE`.
+7. Recargar y abrir `/adoptions/new?petId=4`; comprobar que Toby llegue preseleccionado.
+8. Pulsar **Cancelar** y comprobar que se navegue a `/adoptions`.
 
 ## HU03 – Gestionar solicitud de adopción
 
@@ -240,9 +281,52 @@ Una vez iniciados el frontend y el backend, se deberán verificar los siguientes
 
 Ruta: `/profile`.
 
-La pantalla permite al adoptante registrar, consultar y actualizar sus datos personales: dirección, teléfono y ocupación. La dirección y el teléfono son obligatorios, y si falta alguno se informa el motivo.
+La pantalla permite al adoptante consultar y actualizar sus datos personales (dirección, teléfono y ocupación) y eliminar su registro cuando no tiene adopciones, solicitudes de adopción ni reseñas. La dirección y el teléfono son obligatorios; si falta alguno, los cambios no se guardan y se informa el motivo. Muestra además un resumen con la cantidad de solicitudes, adopciones y reseñas del adoptante. El adoptante se toma del usuario actual fijo definido en `src/config/currentUser.js`. La pantalla contempla los estados de carga y error.
 
-Estado de integración: [completar].
+Alcance pendiente: la pantalla no incluye todavía el registro inicial (alta) del adoptante; asume que el adoptante del usuario actual ya existe.
+
+### Estado de integración
+
+La conexión con el backend está pendiente. La pantalla usa datos de ejemplo en memoria detrás de `src/services/adopterService.js` (y de `src/services/adoptionRequestService.js` para contar las solicitudes), por lo que los datos se reinician al recargar la página. Al conectar el backend solo debe cambiar el cuerpo de las funciones de esos servicios (recurso `/api/adopters`); los nombres de las funciones se conservan.
+
+Puntos a tener en cuenta al integrar:
+
+* El backend devuelve del adoptante únicamente `id`, `address`, `phone` y `occupation`. El nombre y los contadores de adopciones y reseñas que muestra la pantalla deben obtenerse de otros recursos.
+* El backend rechaza hoy cualquier actualización de un adoptante que tenga solicitudes de adopción, aunque la pantalla permite editar. Esta regla del backend está pendiente de ajustar.
+* La eliminación de un adoptante con adopciones, solicitudes o reseñas también la rechaza el backend.
+
+El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando los servicios en memoria.
+
+### Ejecución de pruebas
+
+```bash
+npm test
+```
+
+Para ejecutar únicamente las pruebas de esta historia de usuario:
+
+```bash
+npx vitest run src/pages/ProfilePage src/services/adopterService.test.js
+```
+
+### Ejecución de pruebas con cobertura
+
+```bash
+npm run test:coverage
+```
+
+### Pruebas manuales sugeridas
+
+Con los datos de ejemplo (usuario actual: María Gómez, ID 12, con 3 solicitudes, 1 adopción y 2 reseñas). Los datos de ejemplo se reinician al recargar la página.
+
+1. Ejecutar `npm run dev` y abrir `/profile`. Comprobar que se muestren la dirección, el teléfono y la ocupación, y el resumen de 3 solicitudes, 1 adopción y 2 reseñas.
+2. Borrar la dirección y pulsar **Guardar cambios**; comprobar que se informe que la dirección es obligatoria.
+3. Restaurar la dirección, borrar el teléfono y guardar; comprobar que se informe que el teléfono es obligatorio.
+4. Cambiar la ocupación y guardar; comprobar el mensaje "Cambios guardados.". Ir a otra sección y volver a `/profile` sin recargar; comprobar que el cambio se mantiene.
+5. Modificar un campo y pulsar **Descartar**; comprobar que el formulario vuelva a los valores guardados.
+6. Comprobar que la tarjeta "Eliminar adoptante" muestra el aviso "No disponible: tienes adopciones, solicitudes de adopción o reseñas registradas." y que el botón **Eliminar mi registro** está deshabilitado.
+
+La eliminación de un adoptante sin registros asociados (ID 13 en los datos de ejemplo) se valida en las pruebas automatizadas, porque el usuario actual fijo siempre tiene registros.
 
 ## HU13 – Gestionar refugios
 Ruta: `/shelters`.
@@ -279,3 +363,52 @@ Ruta: `/pets/1/reviews`. El número corresponde al id de la mascota; con los dat
 La pantalla muestra la ficha de la mascota, un formulario para dejar una reseña (calificación de 1 a 5 con estrellas y comentario obligatorio, con mensajes que explican el motivo cuando los datos no son válidos) y la lista de reseñas de esa mascota con su total. Al enviar una reseña válida, esta aparece al inicio de la lista. La reseña se firma con el usuario actual fijo definido en `src/config/currentUser.js`.
 
 Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/reviewService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
+
+## HU17 – Gestionar mensajes
+
+Ruta: `/messages`.
+
+La pantalla tiene dos bandejas, Recibidos y Enviados, con la lista de mensajes de cada una (remitente o destinatario, vista previa del contenido, fecha y estado Leído / No leído). Al abrir un mensaje recibido que aún no ha sido leído, se marca como leído. El panel de detalle muestra remitente, destinatario, fecha, estado y contenido. El remitente solo puede editar un mensaje mientras no ha sido leído, y un mensaje solo se puede eliminar después de haber sido leído; en ambos casos la interfaz deshabilita el botón y explica el motivo. El formulario "Nuevo mensaje" permite elegir un destinatario (sin incluir al usuario actual) y escribir el contenido, que es obligatorio; si el envío falla, se muestra el motivo informado por el servicio. La pantalla contempla los estados de carga, error y bandeja vacía. El usuario actual es fijo y se toma de `src/config/currentUser.js`.
+
+### Estado de integración
+
+La conexión con el backend está pendiente. La pantalla usa datos de ejemplo en memoria detrás de `src/services/messageService.js` y `src/services/userService.js`, por lo que los datos se reinician al recargar la página. Al conectar el backend solo debe cambiar el cuerpo de las funciones de esos servicios (recursos `/api/messages` y `/api/users`); los nombres de las funciones se conservan.
+
+Puntos a tener en cuenta al integrar:
+
+* El backend maneja el remitente y el destinatario como objetos (`sender` y `receiver`, cada uno con su `id`), mientras que los servicios en memoria usan `senderId` y `receiverId`.
+* Las reglas "solo el destinatario puede marcar un mensaje como leído" y "solo el remitente o el destinatario pueden eliminarlo" las aplica hoy el servicio en memoria; el backend no distingue quién realiza la operación.
+* La organización que se muestra junto al nombre del destinatario (por ejemplo, Refugio Esperanza) es un dato de ejemplo que el backend no devuelve.
+
+El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando los servicios en memoria.
+
+### Ejecución de pruebas
+
+```bash
+npm test
+```
+
+Para ejecutar únicamente las pruebas de esta historia de usuario:
+
+```bash
+npx vitest run src/pages/MessagesPage src/services/messageService.test.js src/services/userService.test.js
+```
+
+### Ejecución de pruebas con cobertura
+
+```bash
+npm run test:coverage
+```
+
+### Pruebas manuales sugeridas
+
+Con los datos de ejemplo (usuario actual: María Gómez, ID 12). Los datos de ejemplo se reinician al recargar la página.
+
+1. Ejecutar `npm run dev` y abrir `/messages`. Comprobar que la bandeja Recibidos muestra dos mensajes: el de Carlos Ruiz como "No leído" y el de Ana Torres como "Leído".
+2. Pulsar el mensaje de Carlos Ruiz; comprobar que pasa a "Leído" y que se muestra su detalle.
+3. Ir a Enviados y abrir el mensaje para Carlos Ruiz del 21 de octubre (No leído); comprobar que **Editar** está habilitado y **Eliminar** deshabilitado, con la nota "Solo se puede eliminar un mensaje después de que haya sido leído.".
+4. Pulsar **Editar**, cambiar el texto y pulsar **Guardar cambios**; comprobar el mensaje "Mensaje actualizado.".
+5. En Enviados, abrir el mensaje para Ana Torres (Leído); comprobar que **Editar** está deshabilitado con la nota "Un mensaje leído ya no se puede editar.", pulsar **Eliminar** y comprobar el mensaje "Mensaje eliminado." y que el mensaje desaparece de la lista.
+6. En "Nuevo mensaje", pulsar **Enviar mensaje** sin llenar nada; comprobar que se informe que el contenido es obligatorio.
+7. Escribir un contenido sin elegir destinatario y enviar; comprobar que se informe que el mensaje debe tener un destinatario. Comprobar además que la lista de destinatarios no incluye a María Gómez.
+8. Elegir un destinatario, escribir un contenido y enviar; comprobar el mensaje "Mensaje enviado." y que el mensaje aparezca en Enviados, seleccionado y como "No leído".
