@@ -264,6 +264,14 @@ La pantalla permite registrar, consultar, actualizar y eliminar refugios. Se pue
 ## Integración con Git
 Desarrollar la HU13 en `feature/hu13-gestionar-refugios`. Crear un Pull Request hacia `develop` y solicitar la revisión de un compañero antes de fusionar.
 
+## HU14 – Gestionar veterinarios
+
+Ruta: `/shelters/1/veterinarians`. El número corresponde al id del refugio; con los datos de ejemplo actuales solo existe el refugio 1.
+
+La pantalla muestra el refugio y dos paneles: la tabla de veterinarios registrados (nombre, licencia y teléfono, con acciones Editar y Eliminar) y un formulario para registrar un veterinario. Los tres campos son obligatorios y, si falta alguno, se informa cuál. Al pulsar Editar, el mismo formulario carga los datos del veterinario para actualizarlos. Al pulsar Eliminar se pide confirmación y, una vez eliminado, el veterinario deja de aparecer en la lista. Si el refugio no existe, la pantalla informa que no fue encontrado. Contempla los estados de carga, error y lista vacía.
+
+Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/veterinarianService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
+
 ## HU15 – Registrar reseña de una mascota
 
 Ruta: `/pets/1/reviews`. El número corresponde al id de la mascota; con los datos de ejemplo actuales solo existe la mascota 1.
@@ -271,11 +279,3 @@ Ruta: `/pets/1/reviews`. El número corresponde al id de la mascota; con los dat
 La pantalla muestra la ficha de la mascota, un formulario para dejar una reseña (calificación de 1 a 5 con estrellas y comentario obligatorio, con mensajes que explican el motivo cuando los datos no son válidos) y la lista de reseñas de esa mascota con su total. Al enviar una reseña válida, esta aparece al inicio de la lista. La reseña se firma con el usuario actual fijo definido en `src/config/currentUser.js`.
 
 Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/reviewService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
-
-## HU17 – Gestionar mensajes
-
-Ruta: `/messages`.
-
-La pantalla tiene dos bandejas, Recibidos y Enviados, con la lista de mensajes de cada una (remitente o destinatario, vista previa del contenido, fecha y estado Leído / No leído). Al abrir un mensaje recibido que aún no ha sido leído, se marca como leído. El panel de detalle muestra remitente, destinatario, fecha, estado y contenido. El remitente solo puede editar un mensaje mientras no ha sido leído, y un mensaje solo se puede eliminar después de haber sido leído; en ambos casos la interfaz deshabilita el botón y explica el motivo. El formulario "Nuevo mensaje" permite elegir un destinatario (sin incluir al usuario actual) y escribir el contenido, que es obligatorio; si el envío falla, se muestra el motivo informado por el servicio. La pantalla contempla los estados de carga, error y bandeja vacía. El usuario actual es fijo y se toma de `src/config/currentUser.js`.
-
-Estado de integración: [completar].
