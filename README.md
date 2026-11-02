@@ -170,6 +170,8 @@ npx vitest run src/features/adoptions/AdoptionsPage.test.jsx --coverage
 7. Probar el estado vacío cuando no existan solicitudes aprobadas y utilizar **Actualizar solicitudes** para volver a consultar.
 8. Desconectar el backend y comprobar que se muestre el mensaje de error de conexión.
 
+
+
 ## HU07 – Registrar seguimientos veterinarios
 
 Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
@@ -206,6 +208,33 @@ La pantalla permite registrar y actualizar un seguimiento veterinario asociado a
 9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
 10. Apagar el backend y comprobar que la pantalla muestre un error.
 
+## HU09 – Consultar historial médico
+**Ruta:** `/pets/:petId/medical-history`
+
+La pantalla permite consultar en modo de solo lectura el historial médico de una mascota específica. Despliega información clínica como esterilización, enfermedades registradas, tratamiento actual y datos básicos de la mascota.
+
+Estado de integración
+La interfaz y la lógica del servicio (`medicalHistoryService.js`) están preparadas para consumir el endpoint `/pets/{id}/medical-history` del backend en Spring Boot. El comportamiento de la interfaz, el manejo de estados de error (HTTP 404) y la advertencia por ausencia de historial clínico se encuentran validados mediante pruebas automatizadas ejecutadas con Vitest y React Testing Library.
+
+Ejecución de pruebas
+Ejecución general:
+npm test
+
+Para ejecutar únicamente la suite de esta historia de usuario:
+npx vitest src/pages/MedicalHistoryPage
+
+Ejecución de pruebas con cobertura
+npm run test:coverage
+
+Pruebas manuales de integración
+
+Una vez iniciados el frontend y el backend, se deberán verificar los siguientes escenarios:
+1. Iniciar el backend en Spring Boot y ejecutar `npm run dev` en el proyecto del frontend.
+2. Acceder a la ruta con el ID de una mascota existente (ej. `/pets/1/medical-history`) y validar la renderización correcta del historial médico y los datos del animal.
+3. Ingresar un ID de mascota inexistente en la URL y comprobar que la interfaz despliega el mensaje de error: "La mascota indicada no fue encontrada."
+4. Consultar una mascota válida pero sin historial médico y verificar el mensaje preventivo en pantalla indicando que la mascota aún no posee registros médicos.
+5. Confirmar que no existan botones o formularios habilitados para modificar la información (modo de solo lectura).
+6. Desconectar el servidor backend y comprobar el manejo de errores de red en la pantalla.
 
 ## HU12 – Gestionar información del adoptante
 
