@@ -1,3 +1,4 @@
+
 import { Link, NavLink } from 'react-router-dom'
 import styles from './Navbar.module.css'
 
@@ -5,6 +6,7 @@ const LINKS = [
   { path: '/pets', label: 'Mascotas' },
   { path: '/adoptions', label: 'Adopciones' },
   { path: '/adoption-requests', label: 'Solicitudes' },
+  { path: '/trial-requests/new', label: 'Periodos de prueba' },
   { path: '/shelters', label: 'Refugios' },
   { path: '/notifications', label: 'Notificaciones' },
   { path: '/messages', label: 'Mensajes' },
@@ -17,6 +19,7 @@ export default function Navbar() {
       <Link to="/" className={styles.logo}>
         Pet Adoption Platform
       </Link>
+
       <nav aria-label="Principal">
         <ul className={styles.menu}>
           {LINKS.map(({ path, label }) => (
