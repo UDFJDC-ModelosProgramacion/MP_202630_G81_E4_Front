@@ -208,6 +208,24 @@ La pantalla permite registrar y actualizar un seguimiento veterinario asociado a
 9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
 10. Apagar el backend y comprobar que la pantalla muestre un error.
 
+## HU08 – Consultar seguimientos veterinarios
+**Rutas:** `/follow-ups` (lista con filtros) y `/follow-ups/:id` (detalle).
+
+La pantalla permite consultar la lista de seguimientos veterinarios registrados, filtrar por nombre de mascota o por código de adopción, y ver el detalle completo de un seguimiento por su ID. Cada fila muestra la fecha, la mascota, la adopción (con adoptante), el veterinario responsable y el estado. Si no existen seguimientos o no hay coincidencias con los filtros, se muestra un mensaje informativo. Si el seguimiento consultado no existe, se presenta el mensaje de error correspondiente.
+
+### Pruebas manuales sugeridas
+1. Iniciar el backend y ejecutar `npm run dev`.
+2. Abrir `/follow-ups` y comprobar que se cargue la lista de seguimientos.
+3. Filtrar por nombre de mascota (ej: "Toby") y comprobar que la lista se reduzca.
+4. Filtrar por código de adopción (ej: "AD-101") y comprobar el resultado.
+5. Limpiar los filtros y comprobar que se muestre la lista completa.
+6. Hacer clic en "Ver detalle" de un seguimiento y comprobar que se muestre toda su información (fecha, mascota, adopción, veterinario, estado, notas).
+
+7. Abrir `/follow-ups/FU-999` (ID inexistente) y comprobar que se muestre el mensaje de error.
+8. Desde el detalle, hacer clic en "Editar seguimiento" y comprobar que navegue al formulario de edición.
+9. Hacer clic en "Registrar nuevo seguimiento" y comprobar que navegue al formulario de HU07.
+10. Apagar el backend y comprobar que la pantalla muestre un error.
+
 ## HU09 – Consultar historial médico
 **Ruta:** `/pets/:petId/medical-history`
 
