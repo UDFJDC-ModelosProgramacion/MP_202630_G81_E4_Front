@@ -61,19 +61,19 @@ export const ManageMedicalHistoryPage = () => {
         <h2 className={styles.title}>HU10 - Gestionar historial médico</h2>
         <form onSubmit={handleSave} className={styles.form}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>Esterilizado *</label>
-            <select className={styles.select} value={isSterilized} onChange={(e) => setIsSterilized(e.target.value)}>
+            <label className={styles.label} htmlFor="isSterilized">Esterilizado *</label>
+            <select id="isSterilized" className={styles.select} value={isSterilized} onChange={(e) => setIsSterilized(e.target.value)}>
               <option value="Si">Sí</option>
               <option value="No">No</option>
             </select>
           </div>
           <div className={styles.formGroup}>
-            <label className={styles.label}>Enfermedad</label>
-            <input type="text" className={styles.input} value={disease} onChange={(e) => setDisease(e.target.value)} />
+            <label className={styles.label} htmlFor="disease">Enfermedad</label>
+            <input id="disease" type="text" className={styles.input} value={disease} onChange={(e) => setDisease(e.target.value)} />
           </div>
           <div className={styles.formGroup}>
-            <label className={styles.label}>Tratamiento (obligatorio si hay enfermedad nueva)</label>
-            <textarea className={styles.textarea} value={treatment} onChange={(e) => setTreatment(e.target.value)} />
+            <label className={styles.label} htmlFor="treatment">Tratamiento (obligatorio si hay enfermedad nueva)</label>
+            <textarea id="treatment" className={styles.textarea} value={treatment} onChange={(e) => setTreatment(e.target.value)} />
           </div>
           <div className={styles.buttonContainer}>
             <button type="submit" className={styles.btnPrimary}>Guardar</button>
