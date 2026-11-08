@@ -1,0 +1,130 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.title {
+  color: #0f172a;
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  color: #1e293b;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.historyItem {
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.historyType {
+  font-weight: bold;
+  color: #0f172a;
+  display: block;
+}
+
+.historyDate {
+  font-size: 0.85rem;
+  color: #64748b;
+  display: block;
+  margin: 4px 0;
+}
+
+.historyDesc {
+  margin: 0;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.noEvents {
+  color: #64748b;
+}
+
+.formCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  background-color: #ffffff;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.btnPrimary {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.btnSecondary {
+  background-color: white;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.errorBox {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
