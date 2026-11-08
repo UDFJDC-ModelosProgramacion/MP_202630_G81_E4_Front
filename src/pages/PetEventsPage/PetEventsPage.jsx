@@ -73,10 +73,10 @@ export const PetEventsPage = () => {
         
         {error && <div className={styles.errorBox}>{error}</div>}
         
-        <form onSubmit={handleRegister} className={styles.form}>
+       <form onSubmit={handleRegister} className={styles.form}>
           <div className={styles.formGroup}>
-            <label className={styles.label}>Tipo *</label>
-            <select className={styles.select} value={type} onChange={e => setType(e.target.value)}>
+            <label className={styles.label} htmlFor="type">Tipo *</label>
+            <select id="type" className={styles.select} value={type} onChange={e => setType(e.target.value)}>
               <option value="">Seleccione...</option>
               <option value="Reporte médico">Reporte médico</option>
               <option value="Incidente">Incidente</option>
@@ -85,13 +85,13 @@ export const PetEventsPage = () => {
           </div>
           
           <div className={styles.formGroup}>
-            <label className={styles.label}>Fecha *</label>
-            <input type="date" className={styles.input} value={date} onChange={e => setDate(e.target.value)} />
+            <label className={styles.label} htmlFor="date">Fecha *</label>
+            <input id="date" type="date" className={styles.input} value={date} onChange={e => setDate(e.target.value)} />
           </div>
           
           <div className={styles.formGroup}>
-            <label className={styles.label}>Descripción *</label>
-            <textarea className={styles.textarea} value={description} onChange={e => setDescription(e.target.value)} />
+            <label className={styles.label} htmlFor="description">Descripción *</label>
+            <textarea id="description" className={styles.textarea} value={description} onChange={e => setDescription(e.target.value)} />
           </div>
           
           <div className={styles.buttonContainer}>
