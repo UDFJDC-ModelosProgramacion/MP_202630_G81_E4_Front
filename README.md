@@ -211,7 +211,52 @@ npx vitest run src/features/adoptions/AdoptionsPage.test.jsx --coverage
 7. Probar el estado vacío cuando no existan solicitudes aprobadas y utilizar **Actualizar solicitudes** para volver a consultar.
 8. Desconectar el backend y comprobar que se muestre el mensaje de error de conexión.
 
+## HU05 - Solicitar periodo de prueba
 
+### Descripción
+Permite al adoptante solicitar un periodo de prueba para evaluar la convivencia con una mascota antes de formalizar una adopción.
+
+### Funcionalidades implementadas
+- Visualización de mascotas disponibles.
+- Selección de mascota y refugio.
+- Selección de fecha de inicio.
+- Ingreso de descripción de la solicitud.
+- Validación de usuario adoptante.
+- Validación de periodos de prueba activos.
+- Validación del estado de la mascota.
+- Creación de solicitudes de periodo de prueba.
+- Manejo de errores durante la carga y el envío.
+- Actualización de la información después de crear una solicitud.
+
+### Archivos principales
+- `src/features/trial-requests/TrialRequestPage.jsx`
+- `src/features/trial-requests/TrialRequestPage.module.css`
+- `src/features/trial-requests/TrialRequestPage.test.jsx`
+- `src/api/trialRequests.js`
+- `src/api/trialRequests.test.js`
+
+### Ruta
+`/trial-requests/new`
+
+### Ejecución de pruebas
+
+Para ejecutar las pruebas de HU05:
+
+```bash
+npx vitest run src/features/trial-requests/TrialRequestPage.test.jsx
+```
+
+Para ejecutar las pruebas del servicio:
+
+```bash
+npx vitest run src/api/trialRequests.test.js
+```
+
+Para generar el reporte de cobertura:
+
+```bash
+npx vitest run --coverage
+```
 
 ## HU07 – Registrar seguimientos veterinarios
 
