@@ -155,3 +155,26 @@ export async function getPets() {
     return mockPets
   }
 }
+
+export async function getFollowUps(filters = {}) {
+  try {
+    const params = new URLSearchParams()
+    if (filters.petName) params.set('petName', filters.petName)
+    if (filters.adoptionId) params.set('adoptionId', filters.adoptionId)
+    const qs = params.toString() ? `?${params.toString()}` : ''
+    return await api.get(`/follow-ups${qs}`)
+  } catch {
+    await delay(150)
+    let list = mockFollowUps.map(enrich)
+    if (filters.petName) {
+      const q = filters.petName.toLowerCase()
+      list = list.filter((f) => f.petName.toLowerCase().includes(q))
+    }
+    if (filters.adoptionId) {
+      const q = filters.adoptionId.toLowerCase()
+      list = list.filter((f) => f.adoptionId.toLowerCase().includes(q))
+    }
+    return list
+  }
+}
+
