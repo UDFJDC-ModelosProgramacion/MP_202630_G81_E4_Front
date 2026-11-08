@@ -37,7 +37,7 @@ npm run build
 
 Las pruebas automatizadas se ejecutan en un pipeline de Jenkins (instalación, lint, build, pruebas con cobertura y análisis estático) y los resultados de calidad se revisan en SonarQube.
 
-Capturas del [01/11/2026], commit `[hash]`.
+Capturas del 08/11/2026.
 
 ### Jenkins
 
@@ -340,6 +340,69 @@ Una vez iniciados el frontend y el backend, se deberán verificar los siguientes
 5. Confirmar que no existan botones o formularios habilitados para modificar la información (modo de solo lectura).
 6. Desconectar el servidor backend y comprobar el manejo de errores de red en la pantalla.
 
+## HU10 – Gestionar historial médico
+
+**Responsables:** Andersson Marín, Sebastian Candia  
+**Ruta:** `/pets/:petId/manage-medical-history`
+
+Como veterinario, la pantalla permite registrar y actualizar el historial médico de una mascota para mantener actualizada su información de salud[span_0](start_span)[span_0](end_span).
+
+### Estado de integración
+La interfaz proporciona un formulario controlado que consume el servicio `manageMedicalHistoryService.js` (preparado para peticiones POST y PUT al endpoint `/pets/{id}/medical-history`). Cumple con las reglas de negocio estrictas[span_1](start_span)[span_1](end_span):
+- El campo de esterilización es obligatorio[span_2](start_span)[span_2](end_span).
+- Una mascota esterilizada no puede pasar a no esterilizada[span_3](start_span)[span_3](end_span).
+- Si se agrega una nueva enfermedad, el campo de tratamiento es obligatorio[span_4](start_span)[span_4](end_span).
+- El comportamiento y los mensajes de validación están verificados con React Testing Library y Vitest.
+
+### Ejecución de pruebas
+Ejecución general:
+npm test
+
+Para ejecutar únicamente la suite de esta historia de usuario:
+npx vitest src/pages/ManageMedicalHistoryPage
+
+### Ejecución de pruebas con cobertura
+npm run test:coverage
+
+### Pruebas manuales de integración
+Una vez iniciados el frontend y el backend:
+1. Acceder a la ruta con el ID de una mascota.
+2. Intentar desmarcar la opción "Esterilizado" en una mascota que ya lo estaba y verificar que salte el aviso de validación[span_5](start_span)[span_5](end_span).
+3. Escribir una enfermedad sin especificar el tratamiento, intentar guardar, y verificar el error que exige el tratamiento[span_6](start_span)[span_6](end_span).
+4. Guardar los datos correctamente y verificar el mensaje de éxito y la actualización en el backend.
+
+---
+
+## HU11 – Registrar evento de mascota
+
+**Responsables:** Andersson Marín, Sebastian Candia  
+**Ruta:** `/pets/:petId/events`
+
+Como responsable del refugio, la pantalla permite consultar el listado de eventos y registrar nuevos sucesos (reportes médicos, incidentes u otros) asociados a una mascota existente[span_7](start_span)[span_7](end_span).
+
+### Estado de integración
+La vista está dividida entre el historial cronológico y el formulario de captura[span_8](start_span)[span_8](end_span). El servicio `petEventsService.js` interactúa con el endpoint `/pets/{id}/events`. Las siguientes validaciones están implementadas e integradas[span_9](start_span)[span_9](end_span):
+- Obligatoriedad de los campos de tipo, fecha y descripción[span_10](start_span)[span_10](end_span).
+- Restricción de fechas futuras para tipos de evento "Reporte médico" o "Incidente[span_11](start_span)"[span_11](end_span).
+- Bloqueo de registro de eventos si la mascota tiene un estado de salud "Fallecido[span_12](start_span)"[span_12](end_span).
+
+### Ejecución de pruebas
+Ejecución general:
+npm test
+
+Para ejecutar únicamente la suite de esta historia de usuario:
+npx vitest src/pages/PetEventsPage
+
+### Ejecución de pruebas con cobertura
+npm run test:coverage
+
+### Pruebas manuales de integración
+Una vez iniciados el frontend y el backend:
+1. Acceder a la ruta de eventos de una mascota con estado "Fallecido" y comprobar que la interfaz impida asociar nuevos eventos[span_13](start_span)[span_13](end_span).
+2. En el formulario, seleccionar "Incidente", colocar una fecha correspondiente al día de mañana y verificar que el sistema detenga el registro e informe el error de fecha futura[span_14](start_span)[span_14](end_span).
+3. Intentar guardar el formulario con campos vacíos y verificar el aviso de datos obligatorios[span_15](start_span)[span_15](end_span).
+4. Registrar un evento válido y confirmar que aparezca listado automáticamente en el historial de eventos.
+
 ## HU12 – Gestionar información del adoptante
 
 Ruta: `/profile`.
@@ -426,16 +489,6 @@ Ruta: `/pets/1/reviews`. El número corresponde al id de la mascota; con los dat
 La pantalla muestra la ficha de la mascota, un formulario para dejar una reseña (calificación de 1 a 5 con estrellas y comentario obligatorio, con mensajes que explican el motivo cuando los datos no son válidos) y la lista de reseñas de esa mascota con su total. Al enviar una reseña válida, esta aparece al inicio de la lista. La reseña se firma con el usuario actual fijo definido en `src/config/currentUser.js`.
 
 Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/reviewService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
-
-## HU16 – Gestionar notificaciones
-
-Ruta: `/notifications` (también se llega desde el enlace "Notificaciones" de la barra).
-
-La pantalla muestra las notificaciones del usuario actual, de la más reciente a la más antigua, con su contenido, el momento en que llegaron, la adopción o mascota asociada, el canal (Correo, SMS o Push) y su estado (Leída / No leída). Permite filtrar por Todas, No leídas, Por adopción y Por mascota. Una notificación no leída se puede marcar como leída; la opción de eliminar solo se habilita cuando ya está leída, y la pantalla explica el motivo mientras tanto. Si la operación se rechaza (por ejemplo, porque la notificación pertenece a otro usuario), se muestra el motivo. Contempla los estados de carga, error y vista vacía. El usuario actual es fijo y se toma de `src/config/currentUser.js`.
-
-Esta pantalla corresponde a la vista del usuario destinatario; el envío de notificaciones no está incluido.
-
-Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/notificationService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio, que enviará el id del usuario como parámetro `userId`. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
 
 ## HU17 – Gestionar mensajes
 
