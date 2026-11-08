@@ -427,6 +427,16 @@ La pantalla muestra la ficha de la mascota, un formulario para dejar una reseña
 
 Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/reviewService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
 
+## HU16 – Gestionar notificaciones
+
+Ruta: `/notifications` (también se llega desde el enlace "Notificaciones" de la barra).
+
+La pantalla muestra las notificaciones del usuario actual, de la más reciente a la más antigua, con su contenido, el momento en que llegaron, la adopción o mascota asociada, el canal (Correo, SMS o Push) y su estado (Leída / No leída). Permite filtrar por Todas, No leídas, Por adopción y Por mascota. Una notificación no leída se puede marcar como leída; la opción de eliminar solo se habilita cuando ya está leída, y la pantalla explica el motivo mientras tanto. Si la operación se rechaza (por ejemplo, porque la notificación pertenece a otro usuario), se muestra el motivo. Contempla los estados de carga, error y vista vacía. El usuario actual es fijo y se toma de `src/config/currentUser.js`.
+
+Esta pantalla corresponde a la vista del usuario destinatario; el envío de notificaciones no está incluido.
+
+Estado de integración: La conexión con el backend está pendiente. La pantalla usa datos de ejemplo detrás de `src/services/notificationService.js`; al conectar el backend solo cambia el cuerpo de las funciones de ese servicio, que enviará el id del usuario como parámetro `userId`. El comportamiento de la interfaz se valida mediante pruebas automatizadas con Vitest y React Testing Library, utilizando servicios simulados (mocks).
+
 ## HU17 – Gestionar mensajes
 
 Ruta: `/messages`.

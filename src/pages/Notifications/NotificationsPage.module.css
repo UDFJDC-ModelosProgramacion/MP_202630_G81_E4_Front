@@ -1,0 +1,19 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.error {
+  margin: 0 0 var(--spacing);
+  color: var(--color-danger);
+}
+
+.success {
+  margin: 0 0 var(--spacing);
+  color: var(--badge-success-text);
+  font-weight: 600;
+}
