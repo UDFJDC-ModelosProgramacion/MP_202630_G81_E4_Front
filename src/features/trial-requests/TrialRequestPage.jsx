@@ -67,24 +67,32 @@ export default function TrialRequestPage() {
     let active = true
 
     async function loadData() {
-      try {
-        const [petsData, sheltersData, trialsData] = await Promise.all([
-          getAvailablePets(),
-          getShelters(),
-          trialRequestsApi.list(),
-        ])
+      // allSettled: si falla la lista de periodos (backend sin conexión),
+      // la mascota y el refugio igual cargan y el formulario sigue usable.
+      const [petsResult, sheltersResult, trialsResult] = await Promise.allSettled([
+        getAvailablePets(),
+        getShelters(),
+        trialRequestsApi.list(),
+      ])
 
-        if (!active) return
+      if (!active) return
 
-        setPets(Array.isArray(petsData) ? petsData : [])
-        setShelters(Array.isArray(sheltersData) ? sheltersData : [])
-        setTrials(Array.isArray(trialsData) ? trialsData : [])
+      if (petsResult.status === 'fulfilled') {
+        setPets(Array.isArray(petsResult.value) ? petsResult.value : [])
         setLoadError('')
-      } catch (error) {
-        if (active) setLoadError(getErrorMessage(error))
-      } finally {
-        if (active) setLoading(false)
+      } else {
+        setLoadError(getErrorMessage(petsResult.reason))
       }
+
+      if (sheltersResult.status === 'fulfilled') {
+        setShelters(Array.isArray(sheltersResult.value) ? sheltersResult.value : [])
+      }
+
+      if (trialsResult.status === 'fulfilled') {
+        setTrials(Array.isArray(trialsResult.value) ? trialsResult.value : [])
+      }
+
+      setLoading(false)
     }
 
     void loadData()
