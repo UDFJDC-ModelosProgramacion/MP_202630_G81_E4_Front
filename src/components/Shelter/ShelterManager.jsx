@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Button from '../Button/Button'
 import Card from '../Card/Card'
 import ScreenState from '../ScreenState/ScreenState'
@@ -311,6 +312,12 @@ export default function ShelterManager() {
                             <Button variant="danger" onClick={() => handleDelete(s.id)}>
                               Eliminar
                             </Button>
+                            <Link
+                              to={`/shelters/${s.id}/veterinarians`}
+                              className={styles.vetLink}
+                            >
+                              Veterinarios
+                            </Link>
                           </div>
                         </td>
                       </tr>

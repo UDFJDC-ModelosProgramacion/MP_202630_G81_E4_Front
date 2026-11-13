@@ -86,3 +86,20 @@
   font-weight: bold;
   display: inline-block;
 }
+.cardLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+.cardLink {
+  color: #2563eb;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.cardLink:hover {
+  text-decoration: underline;
+}

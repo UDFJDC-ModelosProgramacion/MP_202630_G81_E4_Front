@@ -55,6 +55,13 @@ export const ManageMedicalHistoryPage = () => {
     }
   };
 
+  const handleCancel = () => {
+    setDisease('');
+    setTreatment('');
+    setSuccess('');
+    setErrors([]);
+  };
+
   return (
     <div className={styles.container}>
       <div>
@@ -77,7 +84,7 @@ export const ManageMedicalHistoryPage = () => {
           </div>
           <div className={styles.buttonContainer}>
             <button type="submit" className={styles.btnPrimary}>Guardar</button>
-            <button type="button" className={styles.btnSecondary}>Cancelar</button>
+            <button type="button" className={styles.btnSecondary} onClick={handleCancel}>Cancelar</button>
           </div>
         </form>
         {success && <p className={styles.successText}>{success}</p>}

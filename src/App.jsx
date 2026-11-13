@@ -13,18 +13,22 @@ import FollowUpForm from './components/FollowUp/FollowUpForm'
 import FollowUpList from './components/FollowUp/FollowUpList'
 import FollowUpDetail from './components/FollowUp/FollowUpDetail'
 import VeterinariansPage from './pages/Veterinarians/VeterinariansPage'
+import HomePage from './pages/Home/HomePage'
+import PetsPage from './pages/PetsPage/PetsPage'
+import MedicalHistoryPage from './pages/MedicalHistoryPage/MedicalHistoryPage'
+import ManageMedicalHistoryPage from './pages/ManageMedicalHistoryPage/ManageMedicalHistoryPage'
+import PetEventsPage from './pages/PetEventsPage/PetEventsPage'
 
-function Pending({ title }) {
-  return <h1>{title} (pendiente)</h1>
-}
-// Each user story replaces the <Pending> of its own route (one line per story).
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Pending title="Inicio" />} />
-        <Route path="/pets" element={<Pending title="Mascotas" />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/pets" element={<PetsPage />} />
         <Route path="/pets/:petId/reviews" element={<PetReviewsPage />} />
+        <Route path="/pets/:petId/medical-history" element={<MedicalHistoryPage />} />
+        <Route path="/pets/:petId/manage-medical-history" element={<ManageMedicalHistoryPage />} />
+        <Route path="/pets/:petId/events" element={<PetEventsPage />} />
         <Route path="/adoptions" element={<AdoptionsPage />} />
         <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
         <Route path="/shelters" element={<ShelterManager />} />

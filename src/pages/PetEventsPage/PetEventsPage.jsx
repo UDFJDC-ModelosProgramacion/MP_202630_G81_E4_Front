@@ -47,6 +47,13 @@ export const PetEventsPage = () => {
     }
   };
 
+  const handleCancel = () => {
+    setType('');
+    setDate('');
+    setDescription('');
+    setError('');
+  };
+
   return (
     <div className={styles.container}>
       <div>
@@ -96,7 +103,7 @@ export const PetEventsPage = () => {
           
           <div className={styles.buttonContainer}>
             <button type="submit" className={styles.btnPrimary}>Registrar</button>
-            <button type="button" className={styles.btnSecondary}>Cancelar</button>
+            <button type="button" className={styles.btnSecondary} onClick={handleCancel}>Cancelar</button>
           </div>
         </form>
       </div>
