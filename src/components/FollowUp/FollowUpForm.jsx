@@ -14,12 +14,13 @@ import {
 import styles from './FollowUpForm.module.css'
 
 const EMPTY_FORM = {
+  followId: '',
   adoptionId: '',
   petId: '',
   vetId: '',
   date: '',
   notes: '',
-  status: 'Programado',
+  status: 'Buena',
 }
 
 export default function FollowUpForm() {
@@ -55,12 +56,14 @@ export default function FollowUpForm() {
           const existing = await getFollowUpById(id)
           if (cancelled) return
           setForm({
-            adoptionId: existing.adoptionId || '',
+            followId: existing.followId || '',
+            // El select usa el id numérico de la adopción (adoptionRefId), no el código AD-xxx.
+            adoptionId: existing.adoptionRefId || existing.adoptionId || '',
             petId: existing.petId || '',
             vetId: existing.vetId || '',
             date: existing.date || '',
             notes: existing.notes || '',
-            status: existing.status || 'Programado',
+            status: existing.status || 'Buena',
           })
         }
       } catch (err) {
@@ -100,6 +103,7 @@ export default function FollowUpForm() {
     setSuccess(null)
     try {
       const payload = {
+        followId: form.followId,
         adoptionId: form.adoptionId,
         petId: Number(form.petId),
         vetId: Number(form.vetId),
@@ -154,7 +158,7 @@ export default function FollowUpForm() {
                 <option value="">Seleccione...</option>
                 {adoptions.map((a) => (
                   <option key={a.id} value={a.id}>
-                    {a.id} · {a.adopter}
+                    {a.adoptionId ?? a.id} · {a.adopter}
                   </option>
                 ))}
               </select>
@@ -206,17 +210,17 @@ export default function FollowUpForm() {
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="status">Estado</label>
+              <label htmlFor="status">Condición física</label>
               <select
                 id="status"
                 name="status"
                 value={form.status}
                 onChange={handleChange}
               >
-                <option value="Programado">Programado</option>
-                <option value="Activa">Activa</option>
-                <option value="Realizado">Realizado</option>
-                <option value="Finalizada">Finalizada</option>
+                <option value="Excelente">Excelente</option>
+                <option value="Buena">Buena</option>
+                <option value="Regular">Regular</option>
+                <option value="Mala">Mala</option>
               </select>
             </div>
           </div>

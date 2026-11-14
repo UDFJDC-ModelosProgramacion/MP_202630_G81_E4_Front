@@ -23,7 +23,7 @@ describe('HU07 - FollowUpForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     service.getActiveAdoptions.mockResolvedValue([
-      { id: 'AD-101', adopter: 'Carlos Ruiz', status: 'ACTIVA' },
+      { id: 5, adoptionId: 'AD-101', adopter: 'Adoptante #9', status: 'ACTIVA' },
     ])
     service.getPets.mockResolvedValue([{ id: 1, name: 'Toby', species: 'Canino' }])
     service.getVets.mockResolvedValue([{ id: 1, name: 'Dr. Juan Parrado' }])
@@ -35,7 +35,7 @@ describe('HU07 - FollowUpForm', () => {
       vetId: 1,
       date: '2026-09-05',
       notes: 'Nota inicial',
-      status: 'Programado',
+      status: 'Buena',
     })
     service.updateFollowUp.mockResolvedValue({ id: 'FU-001' })
   })
@@ -65,7 +65,7 @@ describe('HU07 - FollowUpForm', () => {
     renderForm()
     await waitFor(() => screen.getByLabelText(/adopción activa/i))
 
-    await user.selectOptions(screen.getByLabelText(/adopción activa/i), 'AD-101')
+    await user.selectOptions(screen.getByLabelText(/adopción activa/i), '5')
     await user.selectOptions(screen.getByLabelText(/mascota/i), '1')
     await user.selectOptions(screen.getByLabelText(/veterinario responsable/i), '1')
     await user.type(screen.getByLabelText(/fecha de seguimiento/i), '2026-10-29')
@@ -73,7 +73,7 @@ describe('HU07 - FollowUpForm', () => {
 
     await waitFor(() => {
       expect(service.createFollowUp).toHaveBeenCalledWith(
-        expect.objectContaining({ adoptionId: 'AD-101', petId: 1, vetId: 1 }),
+        expect.objectContaining({ adoptionId: '5', petId: 1, vetId: 1 }),
       )
     })
     expect(await screen.findByRole('status')).toHaveTextContent(/registrado correctamente/i)
@@ -87,7 +87,7 @@ describe('HU07 - FollowUpForm', () => {
     renderForm()
     await waitFor(() => screen.getByLabelText(/adopción activa/i))
 
-    await user.selectOptions(screen.getByLabelText(/adopción activa/i), 'AD-101')
+    await user.selectOptions(screen.getByLabelText(/adopción activa/i), '5')
     await user.selectOptions(screen.getByLabelText(/mascota/i), '1')
     await user.selectOptions(screen.getByLabelText(/veterinario responsable/i), '1')
     await user.type(screen.getByLabelText(/fecha de seguimiento/i), '2026-10-29')
@@ -108,15 +108,15 @@ describe('HU07 - FollowUpForm', () => {
     expect(screen.getByLabelText(/notas/i)).toHaveValue('Nota inicial')
   })
 
-  it('permite programar el seguimiento inicial (estado Programado)', async () => {
+  it('registra el seguimiento con la condición de la mascota', async () => {
     const user = userEvent.setup()
     renderForm()
     await waitFor(() => screen.getByLabelText(/adopción activa/i))
 
-    const statusSelect = screen.getByLabelText(/estado/i)
-    expect(statusSelect).toHaveValue('Programado')
+    const statusSelect = screen.getByLabelText(/condición física/i)
+    expect(statusSelect).toHaveValue('Buena')
 
-    await user.selectOptions(screen.getByLabelText(/adopción activa/i), 'AD-101')
+    await user.selectOptions(screen.getByLabelText(/adopción activa/i), '5')
     await user.selectOptions(screen.getByLabelText(/mascota/i), '1')
     await user.selectOptions(screen.getByLabelText(/veterinario responsable/i), '1')
     await user.type(screen.getByLabelText(/fecha de seguimiento/i), '2026-11-05')
@@ -124,7 +124,7 @@ describe('HU07 - FollowUpForm', () => {
 
     await waitFor(() => {
       expect(service.createFollowUp).toHaveBeenCalledWith(
-        expect.objectContaining({ status: 'Programado', date: '2026-11-05' }),
+        expect.objectContaining({ status: 'Buena', date: '2026-11-05' }),
       )
     })
   })
@@ -134,7 +134,7 @@ describe('HU07 - FollowUpForm', () => {
     renderForm()
     await waitFor(() => screen.getByLabelText(/adopción activa/i))
 
-    await user.selectOptions(screen.getByLabelText(/adopción activa/i), 'AD-101')
+    await user.selectOptions(screen.getByLabelText(/adopción activa/i), '5')
     await user.click(screen.getByRole('button', { name: /limpiar/i }))
     expect(screen.getByLabelText(/adopción activa/i)).toHaveValue('')
   })

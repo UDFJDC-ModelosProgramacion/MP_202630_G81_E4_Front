@@ -262,7 +262,7 @@ npx vitest run --coverage
 
 Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
 
-La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), la condición de la mascota (Excelente, Buena, Regular o Mala) y las notas u observaciones. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
 
 ### Pruebas manuales sugeridas
 
@@ -272,15 +272,15 @@ La pantalla permite registrar y actualizar un seguimiento veterinario asociado a
 4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
 5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
 6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
-7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
-8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
-9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+7. Abrir `/follow-ups/1/edit` (o el ID numérico de un seguimiento existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o la condición de un seguimiento y comprobar que se guarden los cambios.
+9. Cambiar la fecha de un seguimiento que ya tiene notas y comprobar que se muestre el error 412 del backend.
 10. Apagar el backend y comprobar que la pantalla muestre un error.
 
 ## HU07 – Registrar seguimientos veterinarios
 Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
 
-La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), la condición de la mascota (Excelente, Buena, Regular o Mala) y las notas u observaciones. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
 
 ### Pruebas manuales sugeridas
 1. Iniciar el backend y ejecutar `npm run dev`.
@@ -289,15 +289,15 @@ La pantalla permite registrar y actualizar un seguimiento veterinario asociado a
 4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
 5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
 6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
-7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
-8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
-9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+7. Abrir `/follow-ups/1/edit` (o el ID numérico de un seguimiento existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o la condición de un seguimiento y comprobar que se guarden los cambios.
+9. Cambiar la fecha de un seguimiento que ya tiene notas y comprobar que se muestre el error 412 del backend.
 10. Apagar el backend y comprobar que la pantalla muestre un error.
 
 ## HU08 – Consultar seguimientos veterinarios
 **Rutas:** `/follow-ups` (lista con filtros) y `/follow-ups/:id` (detalle).
 
-La pantalla permite consultar la lista de seguimientos veterinarios registrados, filtrar por nombre de mascota o por código de adopción, y ver el detalle completo de un seguimiento por su ID. Cada fila muestra la fecha, la mascota, la adopción (con adoptante), el veterinario responsable y el estado. Si no existen seguimientos o no hay coincidencias con los filtros, se muestra un mensaje informativo. Si el seguimiento consultado no existe, se presenta el mensaje de error correspondiente.
+La pantalla permite consultar la lista de seguimientos veterinarios registrados, filtrar por nombre de mascota o por código de adopción, y ver el detalle completo de un seguimiento por su ID. Cada fila muestra la fecha, la mascota, la adopción (con adoptante), el veterinario responsable y la condición de la mascota. Si no existen seguimientos o no hay coincidencias con los filtros, se muestra un mensaje informativo. Si el seguimiento consultado no existe, se presenta el mensaje de error correspondiente.
 
 ### Pruebas manuales sugeridas
 1. Iniciar el backend y ejecutar `npm run dev`.
@@ -457,15 +457,15 @@ La eliminación de un adoptante sin registros asociados (ID 13 en los datos de e
 ## HU13 – Gestionar refugios
 Ruta: `/shelters`.
 
-La pantalla permite registrar, consultar, actualizar y eliminar refugios. Se puede buscar por nombre, NIT o dirección. El formulario de registro y actualización valida que el NIT sea único y obligatorio, que el nombre sea obligatorio y que la capacidad sea un número mayor a cero. No se permite eliminar un refugio que tenga mascotas o procesos activos asociados. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+La pantalla permite registrar, consultar, actualizar y eliminar refugios. Se puede buscar por NIT, ciudad o descripción. El formulario valida que el NIT sea obligatorio y numérico, que la ciudad sea obligatoria y que la capacidad sea un número mayor a cero; la unicidad del NIT la valida el backend. No se permite eliminar un refugio que tenga mascotas o procesos activos asociados. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
 
 ### Pruebas manuales sugeridas
-1. Iniciar el backend y ejecutar `npm run dev`.
+1. Iniciar el backend (H2 vacío: correr antes las colecciones de Postman) y ejecutar `npm run dev`.
 2. Abrir `/shelters` y comprobar que se cargue la lista de refugios.
-3. Buscar por nombre, NIT o dirección y comprobar que la lista se filtre.
-4. Registrar un refugio nuevo con NIT, nombre y capacidad válidos y comprobar que aparezca en la lista.
+3. Buscar por NIT, ciudad o descripción y comprobar que la lista se filtre.
+4. Registrar un refugio nuevo con NIT, ciudad y capacidad válidos y comprobar que aparezca en la lista.
 5. Intentar registrar un refugio con un NIT ya existente; comprobar que se muestre el error.
-6. Intentar registrar un refugio sin NIT, sin nombre o con capacidad menor o igual a cero; comprobar que se informe el campo faltante o inválido.
+6. Intentar registrar un refugio sin NIT, sin ciudad o con capacidad menor o igual a cero; comprobar que se informe el campo faltante o inválido.
 7. Actualizar los datos de un refugio existente y comprobar que se guarden los cambios.
 8. Eliminar un refugio sin mascotas asociadas y comprobar que desaparezca de la lista.
 9. Intentar eliminar un refugio con mascotas o procesos activos asociados; comprobar que se muestre el error del backend.

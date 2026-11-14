@@ -1,180 +1,108 @@
 import { api } from './apiClient'
 
 // ---------------------------------------------------------------------------
-// Datos mock (HU07). Se usan mientras el backend no esté disponible.
+// HU08 (consultar seguimientos): conectado al back real (GET /api/follow-ups).
+// Los errores NO se capturan: suben tal cual para que la pantalla muestre el
+// mensaje del back (404 -> "FollowUp not found", sin conexión, etc.).
 // ---------------------------------------------------------------------------
-const mockAdoptions = [
-  { id: 'AD-101', adopter: 'Carlos Ruiz', petId: 1, status: 'ACTIVA' },
-  { id: 'AD-104', adopter: 'Ana Torres', petId: 4, status: 'ACTIVA' },
-  { id: 'AD-106', adopter: 'María Pérez', petId: 3, status: 'ACTIVA' },
-  { id: 'AD-108', adopter: 'Julián Gómez', petId: 5, status: 'ACTIVA' },
-]
 
-const mockPets = [
-  { id: 1, name: 'Toby', species: 'Canino', breed: 'Beagle' },
-  { id: 3, name: 'Rocky', species: 'Canino', breed: 'Labrador' },
-  { id: 4, name: 'Nube', species: 'Felino', breed: 'Angora' },
-  { id: 5, name: 'Miel', species: 'Felino', breed: 'Mestizo' },
-]
-
-const mockVets = [
-  { id: 1, name: 'Dr. Juan Parrado' },
-  { id: 2, name: 'Dra. Laura Gómez' },
-]
-
-let mockFollowUps = [
-  {
-    id: 'FU-001',
-    adoptionId: 'AD-101',
-    petId: 1,
-    vetId: 1,
-    date: '2026-09-05',
-    notes: 'Seguimiento inicial aprobado sin alertas',
-    status: 'Realizado',
-  },
-  {
-    id: 'FU-002',
-    adoptionId: 'AD-104',
-    petId: 4,
-    vetId: 1,
-    date: '2026-09-10',
-    notes: 'Peso adecuado (9.8 kg) y buena convivencia',
-    status: 'Realizado',
-  },
-]
-
-let nextId = 3
-
-function enrich(followUp) {
-  const pet = mockPets.find((p) => p.id === followUp.petId)
-  const vet = mockVets.find((v) => v.id === followUp.vetId)
-  const adoption = mockAdoptions.find((a) => a.id === followUp.adoptionId)
+// El back devuelve FollowUpDetailDTO:
+//   { id, followId, date, petCondition, notes,
+//     veterinarian:{id, veterinarianId, specialty}, adoption:{id, adoptionId, adopter:{id}}, pet:{id, name} }
+// Las pantallas usan otra forma (petName, vetName, adopterName...), así que
+// se traduce aquí y los componentes no cambian.
+export function toFollowUpView(dto) {
+  const vet = dto.veterinarian
+  const adoption = dto.adoption
+  const pet = dto.pet
   return {
-    ...followUp,
-    petName: pet ? pet.name : 'Desconocido',
-    vetName: vet ? vet.name : 'Desconocido',
-    adopterName: adoption ? adoption.adopter : 'Desconocido',
+    id: dto.id,
+    followId: dto.followId,
+    date: dto.date ? String(dto.date).slice(0, 10) : '',
+    notes: dto.notes ?? '',
+    // El back no tiene "estado" del seguimiento; el equivalente es petCondition.
+    status: dto.petCondition ?? '',
+    
+    petId: pet?.id ?? '',
+    petName: pet?.name ?? 'Desconocido',
+    vetId: vet?.id ?? '',
+    vetName: vet ? [vet.veterinarianId, vet.specialty].filter(Boolean).join(' · ') : 'Desconocido',
+    adoptionRefId: adoption?.id ?? '',
+    adoptionId: adoption?.adoptionId ?? '',
+    adopterName: adoption?.adopter?.id ? `Adoptante #${adoption.adopter.id}` : 'Desconocido',
   }
 }
 
-const delay = (ms = 250) => new Promise((resolve) => setTimeout(resolve, ms))
-
-// ---------------------------------------------------------------------------
-// Servicio público. Intenta la API real y cae a mock si no está disponible.
-// ---------------------------------------------------------------------------
 export async function getFollowUpById(id) {
-  try {
-    return await api.get(`/follow-ups/${id}`)
-  } catch {
-    await delay()
-    const found = mockFollowUps.find((f) => f.id === id)
-    if (!found) {
-      const error = new Error(`Seguimiento ${id} no fue encontrado`)
-      error.status = 404
-      throw error
-    }
-    return enrich(found)
+  const dto = await api.get(`/follow-ups/${id}`)
+  return toFollowUpView(dto)
+}
+
+// El back todavía no filtra (GET /follow-ups devuelve todo), se filtra aquí.
+export async function getFollowUps(filters = {}) {
+  const list = (await api.get('/follow-ups')).map(toFollowUpView)
+  const pet = filters.petName?.trim().toLowerCase()
+  const adoption = filters.adoptionId?.trim().toLowerCase()
+  return list.filter(
+    (f) =>
+      (!pet || f.petName.toLowerCase().includes(pet)) &&
+      (!adoption || String(f.adoptionId).toLowerCase().includes(adoption)),
+  )
+}
+
+// ---------------------------------------------------------------------------
+// HU07 (registrar / actualizar seguimiento): conectado al back real.
+// ---------------------------------------------------------------------------
+
+// El back espera FollowUpDTO con asociaciones por id y la fecha como instante.
+// Zona horaria de Colombia (UTC-5), igual que las colecciones de Postman.
+export function toFollowUpPayload(form) {
+  return {
+    followId: form.followId || `F-${Date.now()}`,
+    date: `${form.date}T00:00:00-05:00`,
+    petCondition: form.status,
+    notes: form.notes?.trim() ? form.notes : null,
+    veterinarian: { id: Number(form.vetId) },
+    adoption: { id: Number(form.adoptionId) },
+    pet: { id: Number(form.petId) },
   }
 }
 
-export async function createFollowUp(payload) {
-  try {
-    return await api.post('/follow-ups', payload)
-  } catch {
-    await delay()
-    if (!mockAdoptions.find((a) => a.id === payload.adoptionId && a.status === 'ACTIVA')) {
-      const error = new Error('La adopción indicada no existe o no está activa')
-      error.status = 400
-      throw error
-    }
-    if (!mockPets.find((p) => p.id === payload.petId)) {
-      const error = new Error('La mascota indicada no fue encontrada')
-      error.status = 404
-      throw error
-    }
-    if (!mockVets.find((v) => v.id === payload.vetId)) {
-      const error = new Error('El veterinario indicado no fue encontrado')
-      error.status = 404
-      throw error
-    }
-    if (!payload.date) {
-      const error = new Error('La fecha de seguimiento es obligatoria')
-      error.status = 400
-      throw error
-    }
-    const newItem = {
-      id: `FU-00${nextId++}`,
-      ...payload,
-      status: payload.status || 'Programado',
-    }
-    mockFollowUps = [...mockFollowUps, newItem]
-    return enrich(newItem)
-  }
+export async function createFollowUp(form) {
+  return toFollowUpView(await api.post('/follow-ups', toFollowUpPayload(form)))
 }
 
-export async function updateFollowUp(id, payload) {
-  try {
-    return await api.put(`/follow-ups/${id}`, payload)
-  } catch {
-    await delay()
-    const index = mockFollowUps.findIndex((f) => f.id === id)
-    if (index === -1) {
-      const error = new Error(`Seguimiento ${id} no fue encontrado`)
-      error.status = 404
-      throw error
-    }
-    mockFollowUps[index] = { ...mockFollowUps[index], ...payload, id }
-    return enrich(mockFollowUps[index])
-  }
+export async function updateFollowUp(id, form) {
+  return toFollowUpView(await api.put(`/follow-ups/${id}`, toFollowUpPayload(form)))
 }
 
-// Catálogos para los selects del formulario
+// Catálogos para los selects del formulario.
+// El back no filtra por estado: se piden todas y se dejan las ACTIVA.
 export async function getActiveAdoptions() {
-  try {
-    return await api.get('/adoptions?status=ACTIVA')
-  } catch {
-    await delay(100)
-    return mockAdoptions.filter((a) => a.status === 'ACTIVA')
-  }
-}
-
-export async function getVets() {
-  try {
-    return await api.get('/vets')
-  } catch {
-    await delay(100)
-    return mockVets
-  }
+  const list = await api.get('/adoptions')
+  return list
+    .filter((a) => a.status === 'ACTIVA')
+    .map((a) => ({
+      id: a.id,
+      adoptionId: a.adoptionId,
+      adopter: a.adopter?.id ? `Adoptante #${a.adopter.id}` : 'Sin adoptante',
+      status: a.status,
+    }))
 }
 
 export async function getPets() {
-  try {
-    return await api.get('/pets')
-  } catch {
-    await delay(100)
-    return mockPets
-  }
+  const list = await api.get('/pets')
+  return list.map((p) => ({ id: p.id, name: p.name, species: p.specie }))
 }
 
-export async function getFollowUps(filters = {}) {
-  try {
-    const params = new URLSearchParams()
-    if (filters.petName) params.set('petName', filters.petName)
-    if (filters.adoptionId) params.set('adoptionId', filters.adoptionId)
-    const qs = params.toString() ? `?${params.toString()}` : ''
-    return await api.get(`/follow-ups${qs}`)
-  } catch {
-    await delay(150)
-    let list = mockFollowUps.map(enrich)
-    if (filters.petName) {
-      const q = filters.petName.toLowerCase()
-      list = list.filter((f) => f.petName.toLowerCase().includes(q))
-    }
-    if (filters.adoptionId) {
-      const q = filters.adoptionId.toLowerCase()
-      list = list.filter((f) => f.adoptionId.toLowerCase().includes(q))
-    }
-    return list
-  }
+// No existe GET /veterinarians: los veterinarios se piden por refugio.
+export async function getVets() {
+  const shelters = await api.get('/shelters')
+  const perShelter = await Promise.all(
+    shelters.map((sh) => api.get(`/shelters/${sh.id}/veterinarians`)),
+  )
+  return perShelter.flat().map((v) => ({
+    id: v.id,
+    name: [v.veterinarianId, v.specialty].filter(Boolean).join(' · '),
+  }))
 }
-

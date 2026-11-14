@@ -107,7 +107,7 @@ export default function FollowUpList() {
                   <th>Mascota</th>
                   <th>Adopción</th>
                   <th>Veterinario</th>
-                  <th>Estado</th>
+                  <th>Condición</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
