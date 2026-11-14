@@ -15,10 +15,6 @@ function getRelatedName(value) {
   return value || 'No disponible'
 }
 
-function getRelatedId(value) {
-  return value && typeof value === 'object' ? value.id : value
-}
-
 function getAdopterName(trial) {
   return (
     trial.adopterName ||
