@@ -1,77 +1,57 @@
 # Pets – Front-end
 
-Aplicación web para gestionar adopciones de mascotas. Proyecto de Modelos de Programación, Universidad Distrital, grupo G81.
-
-## Tecnologías
-
-- React + Vite
-- JavaScript (JSX)
-- React Router
-- CSS Modules
-- Vitest y React Testing Library
+Aplicación web para gestionar adopciones de mascotas. Proyecto de Modelos de Programación, Universidad Distrital Francisco José de Caldas, grupo G81.
 
 ## Requisitos
 
-- Node.js compatible con la versión de Vite definida en `package.json`.
-- Backend Spring Boot ejecutándose en `http://localhost:8080`.
+Antes de ejecutar el proyecto, asegúrate de tener instalado:
+
+- Node.js y npm.
+- El backend Spring Boot en ejecución en `http://localhost:8080`.
 
 ## Instalación y ejecución
 
-```bash
-npm ci
-npm run dev
-```
+1. Clonar el repositorio:
 
-Abre la URL que muestre Vite (normalmente `http://localhost:5173`). La configuración de Vite reenvía las peticiones `/api` a `http://localhost:8080`.
+   ```bash
+   git clone https://github.com/UDFJDC-ModelosProgramacion/MP_202630_G81_E4_Front.git
+   ```
 
-## Scripts
+2. Ingresar a la carpeta del proyecto:
+
+   ```bash
+   cd MP_202630_G81_E4_Front
+   ```
+
+3. Instalar las dependencias:
+
+   ```bash
+   npm ci
+   ```
+
+4. Iniciar el servidor de desarrollo:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Abrir en el navegador la dirección que muestra Vite, normalmente:
+
+   `http://localhost:5173`
+
+## Ejecución de pruebas
+
+Para ejecutar las pruebas automatizadas:
 
 ```bash
 npm test
-npm run test:coverage
+```
+
+## Otros comandos
+
+```bash
 npm run lint
 npm run build
-```
-
-## Evidencia de pruebas automatizadas
-
-Las pruebas automatizadas se ejecutan en un pipeline de Jenkins (instalación, lint, build, pruebas con cobertura y análisis estático) y los resultados de calidad se revisan en SonarQube.
-
-Capturas del 08/11/2026.
-
-### Jenkins
-
-![Jenkins: etapas del pipeline](docs/jenkins-stages.png)
-
-### SonarQube
-
-![SonarQube: resumen del proyecto](docs/sonar-resumen.png)
-
-## HU01 – Consultar mascotas disponibles
-
-Ruta: `/pets`.
-
-La pantalla permite consultar y visualizar la lista de mascotas disponibles para adopción, buscar por nombre de la mascota y aplicar filtros por especie, raza o refugio. Además, la vista garantiza que solo se muestren mascotas con estado de adopción disponible y un estado de salud apto.
-
-### Estado de integración
-
-La interfaz y la lógica del servicio (petService.js) están preparadas para consumir el endpoint /pets del backend REST en Spring Boot. El comportamiento de la interfaz, el filtrado y la renderización se encuentran validados mediante pruebas automatizadas ejecutadas con Vitest y React Testing Library.
-
-### Ejecución de pruebas
-
-```bash
-npm test
-```
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-
-```bash
-npx vitest src/pages/PetsPage
-```
-
-### Ejecución de pruebas con cobertura
-
-```bash
 npm run test:coverage
 ```
 
@@ -538,3 +518,4 @@ Con los datos de ejemplo (usuario actual: María Gómez, ID 12). Los datos de ej
 6. En "Nuevo mensaje", pulsar **Enviar mensaje** sin llenar nada; comprobar que se informe que el contenido es obligatorio.
 7. Escribir un contenido sin elegir destinatario y enviar; comprobar que se informe que el mensaje debe tener un destinatario. Comprobar además que la lista de destinatarios no incluye a María Gómez.
 8. Elegir un destinatario, escribir un contenido y enviar; comprobar el mensaje "Mensaje enviado." y que el mensaje aparezca en Enviados, seleccionado y como "No leído".
+**Nota:** El frontend utiliza el backend Spring Boot para las operaciones que requieren persistencia. La configuración de Vite redirige las peticiones realizadas a `/api` hacia `http://localhost:8080`.
