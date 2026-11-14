@@ -71,7 +71,7 @@ export default function FollowUpDetail() {
             <dd>{followUp.date}</dd>
           </div>
           <div className={styles.item}>
-            <dt>Estado</dt>
+            <dt>Condición de la mascota</dt>
             <dd>
               <span className={`${styles.badge} ${styles[`status_${followUp.status}`] || ''}`}>
                 {followUp.status}
