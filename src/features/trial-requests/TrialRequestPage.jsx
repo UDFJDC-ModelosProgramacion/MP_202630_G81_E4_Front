@@ -1,9 +1,8 @@
-
 import { useEffect, useMemo, useState } from 'react'
 import { CURRENT_USER } from '../../config/currentUser'
 import { getAvailablePets } from '../../services/petService'
 import { getShelters } from '../../services/shelterService'
-import { trialRequestsApi } from '../../api/trialRequests'
+import { listTrialRequests, createTrialRequest } from '../../services/trialRequestService'
 import styles from './TrialRequestPage.module.css'
 
 function normalize(value) {
@@ -72,7 +71,7 @@ export default function TrialRequestPage() {
       const [petsResult, sheltersResult, trialsResult] = await Promise.allSettled([
         getAvailablePets(),
         getShelters(),
-        trialRequestsApi.list(),
+        listTrialRequests(),
       ])
 
       if (!active) return
@@ -206,11 +205,11 @@ export default function TrialRequestPage() {
         pet: { id: selectedPet.id },
       }
 
-      await trialRequestsApi.create(payload)
+      await createTrialRequest(payload)
 
       setNotice('Periodo de prueba solicitado correctamente.')
 
-      const updatedTrials = await trialRequestsApi.list()
+      const updatedTrials = await listTrialRequests()
       setTrials(Array.isArray(updatedTrials) ? updatedTrials : [])
     } catch (error) {
       setActionError(getErrorMessage(error))

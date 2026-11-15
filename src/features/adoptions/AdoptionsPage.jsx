@@ -1,7 +1,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { adoptionRequestsApi } from '../../api/adoptionRequests'
-import { adoptionsApi } from '../../api/adoptions'
+import { getAdoptionRequests } from '../../services/adoptionRequestsService'
+import { createAdoption } from '../../services/adoptionService'
 import styles from './AdoptionsPage.module.css'
 
 function displayName(value) {
@@ -47,7 +47,7 @@ export default function AdoptionsPage() {
   // Consultar solicitudes aprobadas
   const loadRequests = useCallback(async () => {
     try {
-      const data = await adoptionRequestsApi.list()
+      const data = await getAdoptionRequests()
 
       const approvedRequests = Array.isArray(data)
         ? data.filter(
@@ -154,7 +154,7 @@ export default function AdoptionsPage() {
         pet: { id: pet.id },
       }
 
-      await adoptionsApi.create(payload)
+      await createAdoption(payload)
 
       setNotice('Adopción registrada correctamente.')
 

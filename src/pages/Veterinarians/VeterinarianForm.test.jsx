@@ -6,6 +6,7 @@ import VeterinarianForm from './VeterinarianForm'
 async function fillForm() {
   await userEvent.type(screen.getByLabelText('Nombre *'), 'Dra. Ana Torres')
   await userEvent.type(screen.getByLabelText('Licencia *'), 'MV-30412')
+  await userEvent.type(screen.getByLabelText('Especialidad *'), 'Dermatología')
   await userEvent.type(screen.getByLabelText('Teléfono *'), '312 555 0178')
 }
 
@@ -32,17 +33,25 @@ describe('VeterinarianForm', () => {
     expect(onSubmit).toHaveBeenCalledWith({
       name: 'Dra. Ana Torres',
       license: 'MV-30412',
+      specialty: 'Dermatología',
       phone: '312 555 0178',
     })
   })
 
   it('shows the data of the veterinarian when editing', () => {
-    const veterinarian = { id: 1, name: 'Dra. Laura Gómez', license: 'MV-10231', phone: '310 555 0101' }
+    const veterinarian = {
+      id: 1,
+      name: 'Dra. Laura Gómez',
+      license: 'MV-10231',
+      specialty: 'Cirugía',
+      phone: '310 555 0101',
+    }
     render(<VeterinarianForm initialValues={veterinarian} onSubmit={vi.fn()} onCancel={vi.fn()} />)
 
     expect(screen.getByRole('heading', { name: 'Editar veterinario' })).toBeInTheDocument()
     expect(screen.getByLabelText('Nombre *')).toHaveValue('Dra. Laura Gómez')
     expect(screen.getByLabelText('Licencia *')).toHaveValue('MV-10231')
+    expect(screen.getByLabelText('Especialidad *')).toHaveValue('Cirugía')
     expect(screen.getByRole('button', { name: 'Guardar cambios' })).toBeInTheDocument()
   })
 
