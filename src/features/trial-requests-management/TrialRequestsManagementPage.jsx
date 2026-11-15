@@ -1,6 +1,5 @@
-
 import { useEffect, useMemo, useState } from 'react'
-import { trialRequestsApi } from '../../api/trialRequests'
+import { listTrialRequests, updateTrialRequest } from '../../services/trialRequestService'
 import styles from './TrialRequestsManagementPage.module.css'
 
 function normalize(value) {
@@ -86,7 +85,7 @@ export default function TrialRequestsManagementPage() {
     setError('')
 
     try {
-      const data = await trialRequestsApi.list()
+      const data = await listTrialRequests()
       setTrials(Array.isArray(data) ? data : [])
     } catch (requestError) {
       setError(getErrorMessage(requestError))
@@ -100,7 +99,7 @@ export default function TrialRequestsManagementPage() {
 
     async function loadData() {
       try {
-        const data = await trialRequestsApi.list()
+        const data = await listTrialRequests()
 
         if (mounted) {
           setTrials(Array.isArray(data) ? data : [])
@@ -167,7 +166,7 @@ export default function TrialRequestsManagementPage() {
     setNotice('')
 
     try {
-      await trialRequestsApi.update(trial.id, {
+      await updateTrialRequest(trial.id, {
         ...trial,
         status: 'FINALIZADA',
       })
@@ -191,7 +190,7 @@ export default function TrialRequestsManagementPage() {
     setNotice('')
 
     try {
-      await trialRequestsApi.update(editingTrial.id, {
+      await updateTrialRequest(editingTrial.id, {
         ...editingTrial,
       })
 

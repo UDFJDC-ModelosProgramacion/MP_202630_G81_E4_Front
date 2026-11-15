@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -13,16 +12,16 @@ vi.mock('../../services/shelterService', () => ({
   getShelters: vi.fn(),
 }))
 
-vi.mock('../../api/trialRequests', () => ({
-  trialRequestsApi: {
-    list: vi.fn(),
-    create: vi.fn(),
-  },
+vi.mock('../../services/trialRequestService', () => ({
+  listTrialRequests: vi.fn(),
+  createTrialRequest: vi.fn(),
 }))
 
 import { getAvailablePets } from '../../services/petService'
 import { getShelters } from '../../services/shelterService'
-import { trialRequestsApi } from '../../api/trialRequests'
+import { listTrialRequests, createTrialRequest } from '../../services/trialRequestService'
+
+const trialRequestsApi = { list: listTrialRequests, create: createTrialRequest }
 
 const mockPets = [
   {

@@ -1,17 +1,19 @@
-
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
-import { adoptionRequestsApi } from '../../api/adoptionRequests'
+import { getAdoptionRequests, updateAdoptionRequest } from '../../services/adoptionRequestsService'
 import AdoptionRequestsPage from './AdoptionRequestsPage'
 
-vi.mock('../../api/adoptionRequests', () => ({
-  adoptionRequestsApi: {
-    list: vi.fn(),
-    update: vi.fn(),
-  },
+vi.mock('../../services/adoptionRequestsService', () => ({
+  getAdoptionRequests: vi.fn(),
+  updateAdoptionRequest: vi.fn(),
 }))
+
+const adoptionRequestsApi = {
+  list: getAdoptionRequests,
+  update: updateAdoptionRequest,
+}
 
 const sample = [
   {

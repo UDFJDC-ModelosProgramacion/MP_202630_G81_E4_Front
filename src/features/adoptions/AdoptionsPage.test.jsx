@@ -1,4 +1,3 @@
-
 import {
   afterEach,
   beforeEach,
@@ -19,25 +18,20 @@ import {
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 
-import { adoptionRequestsApi } from '../../api/adoptionRequests'
-import { adoptionsApi } from '../../api/adoptions'
+import { getAdoptionRequests } from '../../services/adoptionRequestsService'
+import { createAdoption } from '../../services/adoptionService'
 import AdoptionsPage from './AdoptionsPage'
 
-vi.mock('../../api/adoptionRequests', () => ({
-  adoptionRequestsApi: {
-    list: vi.fn(),
-  },
+vi.mock('../../services/adoptionRequestsService', () => ({
+  getAdoptionRequests: vi.fn(),
 }))
 
-vi.mock('../../api/adoptions', () => ({
-  adoptionsApi: {
-    list: vi.fn(),
-    get: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-  },
+vi.mock('../../services/adoptionService', () => ({
+  createAdoption: vi.fn(),
 }))
+
+const adoptionRequestsApi = { list: getAdoptionRequests }
+const adoptionsApi = { create: createAdoption }
 
 // Datos de prueba
 const sample = [

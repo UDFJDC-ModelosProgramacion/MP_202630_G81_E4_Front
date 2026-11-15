@@ -20,6 +20,7 @@ export default function VeterinarianForm({ initialValues = null, onSubmit, onCan
       ? {
           name: initialValues.name,
           license: initialValues.license,
+          specialty: initialValues.specialty ?? '',
           phone: initialValues.phone,
         }
       : EMPTY_VALUES,

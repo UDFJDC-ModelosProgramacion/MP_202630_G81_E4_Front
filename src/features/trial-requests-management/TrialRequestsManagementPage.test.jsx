@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import {
   render,
@@ -10,14 +9,14 @@ import {
 import userEvent from '@testing-library/user-event'
 import TrialRequestsManagementPage from './TrialRequestsManagementPage'
 
-vi.mock('../../api/trialRequests', () => ({
-  trialRequestsApi: {
-    list: vi.fn(),
-    update: vi.fn(),
-  },
+vi.mock('../../services/trialRequestService', () => ({
+  listTrialRequests: vi.fn(),
+  updateTrialRequest: vi.fn(),
 }))
 
-import { trialRequestsApi } from '../../api/trialRequests'
+import { listTrialRequests, updateTrialRequest } from '../../services/trialRequestService'
+
+const trialRequestsApi = { list: listTrialRequests, update: updateTrialRequest }
 
 const mockTrials = [
   {
