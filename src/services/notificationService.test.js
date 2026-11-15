@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest'
 import { CURRENT_USER } from '../config/currentUser'
-import { api } from './apiClient'
 import { deleteNotification, listNotifications, markAsRead } from './notificationService'
 
 const USER_ID = CURRENT_USER.userId
