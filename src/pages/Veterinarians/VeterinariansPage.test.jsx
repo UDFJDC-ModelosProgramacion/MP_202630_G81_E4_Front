@@ -21,8 +21,14 @@ vi.mock('../../services/veterinarianService', () => ({
 
 const shelter = { id: 1, name: 'Huellitas del Norte' }
 const veterinarians = [
-  { id: 1, name: 'Dra. Laura Gómez', license: 'MV-10231', phone: '310 555 0101' },
-  { id: 2, name: 'Dr. Carlos Ruiz', license: 'MV-20877', phone: '311 555 0144' },
+  { id: 1, name: 'Dra. Laura Gómez', license: 'MV-10231', specialty: 'Cirugía', phone: '310 555 0101' },
+  {
+    id: 2,
+    name: 'Dr. Carlos Ruiz',
+    license: 'MV-20877',
+    specialty: 'Medicina general',
+    phone: '311 555 0144',
+  },
 ]
 
 function renderPage() {
@@ -66,17 +72,19 @@ describe('VeterinariansPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Refugio no encontrado')
   })
 
-  it('registers a veterinarian and shows it in the list', async () => {
+    it('registers a veterinarian and shows it in the list', async () => {
     await renderLoadedPage()
     createVeterinarian.mockResolvedValue({
       id: 3,
       name: 'Dra. Ana Torres',
       license: 'MV-30412',
+      specialty: 'Dermatología',
       phone: '312 555 0178',
     })
 
     await userEvent.type(screen.getByLabelText('Nombre *'), 'Dra. Ana Torres')
     await userEvent.type(screen.getByLabelText('Licencia *'), 'MV-30412')
+    await userEvent.type(screen.getByLabelText('Especialidad *'), 'Dermatología')
     await userEvent.type(screen.getByLabelText('Teléfono *'), '312 555 0178')
     await userEvent.click(screen.getByRole('button', { name: 'Registrar' }))
 
@@ -85,6 +93,7 @@ describe('VeterinariansPage', () => {
     expect(createVeterinarian).toHaveBeenCalledWith('1', {
       name: 'Dra. Ana Torres',
       license: 'MV-30412',
+      specialty: 'Dermatología',
       phone: '312 555 0178',
     })
     expect(screen.getByLabelText('Nombre *')).toHaveValue('')
@@ -104,9 +113,10 @@ describe('VeterinariansPage', () => {
 
     expect(await screen.findByText('Veterinario actualizado.')).toBeInTheDocument()
     expect(screen.getByText('Dra. Laura G.')).toBeInTheDocument()
-    expect(updateVeterinarian).toHaveBeenCalledWith('1', 1, {
+        expect(updateVeterinarian).toHaveBeenCalledWith('1', 1, {
       name: 'Dra. Laura G.',
       license: 'MV-10231',
+      specialty: 'Cirugía',
       phone: '310 555 0101',
     })
     expect(screen.getByRole('heading', { name: 'Registrar veterinario' })).toBeInTheDocument()
