@@ -66,8 +66,8 @@ export const MedicalHistoryPage = () => {
                   <p className={styles.fieldValue}>{data.history.treatment || 'N/A'}</p>
                 </div>
                 <div className={styles.fieldGroup}>
-                  <span className={styles.fieldLabel}>Última actualización</span>
-                  <p className={styles.fieldValue}>{data.history.lastUpdate}</p>
+                  <span className={styles.fieldLabel}>Vacunas</span>
+                  <p className={styles.fieldValue}>{data.history.vaccine || 'N/A'}</p>
                 </div>
               </>
             ) : (

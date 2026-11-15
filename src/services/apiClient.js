@@ -26,7 +26,8 @@ async function readBody(response) {
 function extractMessage(body, status) {
   if (typeof body === 'string' && body.trim()) return body
   if (body && typeof body === 'object') {
-        return body.message || body.error || DEFAULT_MESSAGES[status]
+        // El back envuelve los errores en { apierror: { message } }
+        return body.apierror?.message || body.message || body.error || DEFAULT_MESSAGES[status]
   }
   return DEFAULT_MESSAGES[status] ?? `Error inesperado (${status})`
 }
