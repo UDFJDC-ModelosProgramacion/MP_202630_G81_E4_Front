@@ -33,3 +33,13 @@ export const markAsRead = async (notificationId, userId) => {
 
 export const deleteNotification = (notificationId, userId) =>
   api.delete(`/notifications/${notificationId}`, { userId })
+
+const toCreateBody = ({ userId, adoptionId, petId, channel, content }) => ({
+  channel,
+  content: content.trim(),
+  user: { id: Number(userId) },
+  adoption: { id: Number(adoptionId) },
+  ...(petId ? { pet: { id: Number(petId) } } : {}),
+})
+
+export const createNotification = (data) => api.post('/notifications', toCreateBody(data))
