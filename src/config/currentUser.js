@@ -3,7 +3,7 @@
 // userId    -> id in the "users" resource (used by messages, HU17)
 // adopterId -> id in the "adopters" resource (used by the profile and requests, HU12 and HU02)
 export const CURRENT_USER = {
-  userId: 12,
-  adopterId: 12,
+  userId: 1,
+  adopterId: 1,
   name: 'María Gómez',
 }

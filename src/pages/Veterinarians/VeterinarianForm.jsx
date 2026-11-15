@@ -7,10 +7,11 @@ import styles from './VeterinarianForm.module.css'
 const FIELDS = [
   { name: 'name', label: 'Nombre', placeholder: 'Nombre completo' },
   { name: 'license', label: 'Licencia', placeholder: 'Número de licencia' },
+  { name: 'specialty', label: 'Especialidad', placeholder: 'Especialidad' },
   { name: 'phone', label: 'Teléfono', placeholder: 'Teléfono de contacto' },
 ]
 
-const EMPTY_VALUES = { name: '', license: '', phone: '' }
+const EMPTY_VALUES = { name: '', license: '', specialty: '', phone: '' }
 
 export default function VeterinarianForm({ initialValues = null, onSubmit, onCancel }) {
   const isEditing = initialValues !== null

@@ -1,4 +1,5 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { api } from './apiClient'
 import {
   createVeterinarian,
   deleteVeterinarian,
@@ -7,66 +8,106 @@ import {
   updateVeterinarian,
 } from './veterinarianService'
 
-const data = { name: 'Dr. Nuevo', license: 'MV-99999', phone: '300 000 0000' }
+vi.mock('./apiClient', () => ({
+  api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+}))
+
+const dto = {
+  id: 7,
+  veterinarianId: 'MV-10231',
+  specialty: 'Cirugía',
+  availability: 'Lunes a viernes',
+  name: 'Dra. Laura Gómez',
+  phone: '310 555 0101',
+  shelter: { id: 1 },
+}
+
+const veterinarian = {
+  id: 7,
+  name: 'Dra. Laura Gómez',
+  license: 'MV-10231',
+  specialty: 'Cirugía',
+  phone: '310 555 0101',
+}
+
+const formData = {
+  name: 'Dra. Laura Gómez',
+  license: 'MV-10231',
+  specialty: 'Cirugía',
+  phone: '310 555 0101',
+}
+
+const body = {
+  name: 'Dra. Laura Gómez',
+  veterinarianId: 'MV-10231',
+  specialty: 'Cirugía',
+  phone: '310 555 0101',
+}
 
 describe('veterinarianService', () => {
-  it('returns the shelter summary', async () => {
-    const shelter = await getShelterSummary('1')
-    expect(shelter.name).toBe('Huellitas del Norte')
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('rejects the summary of a shelter that does not exist', async () => {
-    await expect(getShelterSummary('999')).rejects.toThrow('Refugio no encontrado')
+  it('returns the id and name of the shelter', async () => {
+    api.get.mockResolvedValue({ id: 1, name: 'Huellitas del Norte', capacity: 20 })
+
+    expect(await getShelterSummary('1')).toEqual({ id: 1, name: 'Huellitas del Norte' })
+    expect(api.get).toHaveBeenCalledWith('/shelters/1')
   })
 
-  it('lists the veterinarians of a shelter', async () => {
-    const list = await listVeterinarians('1')
-    expect(list.length).toBeGreaterThanOrEqual(3)
+  it('lists the veterinarians of a shelter in the shape the screens use', async () => {
+    api.get.mockResolvedValue([dto])
+
+    expect(await listVeterinarians('1')).toEqual([veterinarian])
+    expect(api.get).toHaveBeenCalledWith('/shelters/1/veterinarians')
   })
 
-  it('rejects listing the veterinarians of a shelter that does not exist', async () => {
-    await expect(listVeterinarians('999')).rejects.toThrow('Refugio no encontrado')
+  it('creates a veterinarian under the shelter', async () => {
+    api.post.mockResolvedValue(dto)
+
+    expect(await createVeterinarian('1', formData)).toEqual(veterinarian)
+    expect(api.post).toHaveBeenCalledWith('/shelters/1/veterinarians', body)
   })
 
-  it('creates a veterinarian and trims its fields', async () => {
-    const created = await createVeterinarian('1', { ...data, name: '  Dr. Nuevo  ' })
-    expect(created.name).toBe('Dr. Nuevo')
-    const list = await listVeterinarians('1')
-    expect(list.some((vet) => vet.id === created.id)).toBe(true)
+  it('trims the fields before sending them', async () => {
+    api.post.mockResolvedValue(dto)
+
+    await createVeterinarian('1', {
+      name: '  Dra. Laura Gómez ',
+      license: ' MV-10231 ',
+      specialty: ' Cirugía  ',
+      phone: ' 310 555 0101 ',
+    })
+
+    expect(api.post).toHaveBeenCalledWith('/shelters/1/veterinarians', body)
   })
 
-  it('does not create a veterinarian in a shelter that does not exist', async () => {
-    await expect(createVeterinarian('999', data)).rejects.toThrow('Refugio no encontrado')
+  it('updates a veterinarian through its own route', async () => {
+    api.put.mockResolvedValue({ ...dto, specialty: 'Medicina general' })
+
+    const updated = await updateVeterinarian('1', 7, { ...formData, specialty: 'Medicina general' })
+
+    expect(updated.specialty).toBe('Medicina general')
+    expect(api.put).toHaveBeenCalledWith('/veterinarians/7', {
+      ...body,
+      specialty: 'Medicina general',
+    })
   })
 
-  it('updates a veterinarian', async () => {
-    const created = await createVeterinarian('1', data)
-    const updated = await updateVeterinarian('1', created.id, { ...data, name: 'Dr. Cambiado' })
-    expect(updated.name).toBe('Dr. Cambiado')
-    const list = await listVeterinarians('1')
-    expect(list.find((vet) => vet.id === created.id).name).toBe('Dr. Cambiado')
+  it('deletes a veterinarian through its own route', async () => {
+    api.delete.mockResolvedValue()
+
+    await deleteVeterinarian('1', 7)
+
+    expect(api.delete).toHaveBeenCalledWith('/veterinarians/7')
   })
 
-  it('rejects updating a veterinarian that does not exist', async () => {
-    await expect(updateVeterinarian('1', 999, data)).rejects.toThrow('Veterinario no encontrado')
-  })
+  it('lets the error of the back reach the screen', async () => {
+    api.post.mockRejectedValue(new Error('Ya existe un veterinario con esa licencia'))
 
-  it('rejects updating in a shelter that does not exist', async () => {
-    await expect(updateVeterinarian('999', 1, data)).rejects.toThrow('Refugio no encontrado')
-  })
-
-  it('deletes a veterinarian', async () => {
-    const created = await createVeterinarian('1', data)
-    await deleteVeterinarian('1', created.id)
-    const list = await listVeterinarians('1')
-    expect(list.some((vet) => vet.id === created.id)).toBe(false)
-  })
-
-  it('rejects deleting a veterinarian that does not exist', async () => {
-    await expect(deleteVeterinarian('1', 999)).rejects.toThrow('Veterinario no encontrado')
-  })
-
-  it('rejects deleting in a shelter that does not exist', async () => {
-    await expect(deleteVeterinarian('999', 1)).rejects.toThrow('Refugio no encontrado')
+    await expect(createVeterinarian('1', formData)).rejects.toThrow(
+      'Ya existe un veterinario con esa licencia',
+    )
   })
 })

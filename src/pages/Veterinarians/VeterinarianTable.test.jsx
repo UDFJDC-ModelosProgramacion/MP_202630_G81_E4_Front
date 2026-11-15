@@ -36,4 +36,10 @@ describe('VeterinarianTable', () => {
       screen.getByText('Este refugio aún no tiene veterinarios registrados.'),
     ).toBeInTheDocument()
   })
+    it('shows an empty message when there are no veterinarians', () => {
+    render(<VeterinarianTable veterinarians={[]} onEdit={vi.fn()} onDelete={vi.fn()} />)
+    expect(
+      screen.getByText('Este refugio aún no tiene veterinarios registrados.'),
+    ).toBeInTheDocument()
+  })
 })

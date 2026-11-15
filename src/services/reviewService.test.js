@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import { api } from './apiClient'
 import { getPet, getReviews, createReview } from './reviewService'
 
 describe('reviewService', () => {
