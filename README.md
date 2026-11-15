@@ -62,7 +62,7 @@ Una vez iniciados el frontend y el backend, se deberán verificar los siguientes
 * Iniciar el backend en Spring Boot y ejecutar npm run dev en el proyecto del frontend.
 * Abrir la ruta /pets en el navegador y comprobar que se carguen las mascotas reales desde el servidor.
 * Buscar una mascota por su nombre en la barra de búsqueda y validar la actualización dinámica de la lista.
-* Aplicar filtros combinados de especie (ej. Perro/Gato), raza y refugio.
+* Aplicar filtros combinados de especie (ej. Perro/Gato), raza y refugio. Nota: el backend entrega la especie en el campo `specie` y el refugio como objeto sin nombre, por lo que la vista muestra la ciudad del refugio (`shelter.city`); el servicio `petService.js` normaliza ambos.
 * Verificar que únicamente se muestren mascotas cuyo estado de adopción sea "Disponible".
 * Confirmar que aquellas mascotas cuyo estado de salud sea "Enfermo" o "En tratamiento" no aparezcan en la grilla de adopción.
 * Ingresar un filtro o búsqueda sin coincidencias y verificar que la interfaz despliegue el mensaje: "No se encontraron mascotas que cumplan con los filtros aplicados."
@@ -295,61 +295,73 @@ La pantalla permite consultar la lista de seguimientos veterinarios registrados,
 ## HU09 – Consultar historial médico
 **Ruta:** `/pets/:petId/medical-history`
 
-La pantalla permite consultar en modo de solo lectura el historial médico de una mascota específica. Despliega información clínica como esterilización, enfermedades registradas, tratamiento actual y datos básicos de la mascota.
+La pantalla permite consultar en modo de solo lectura el historial médico de una mascota específica. Despliega información clínica (esterilización, enfermedades, tratamiento y vacunas) y datos básicos de la mascota.
 
-Estado de integración
-La interfaz y la lógica del servicio (`medicalHistoryService.js`) están preparadas para consumir el endpoint `/pets/{id}/medical-history` del backend en Spring Boot. El comportamiento de la interfaz, el manejo de estados de error (HTTP 404) y la advertencia por ausencia de historial clínico se encuentran validados mediante pruebas automatizadas ejecutadas con Vitest y React Testing Library.
+### Estado de integración
+Integrada con el backend a través de `medicalHistoryService.js`, que usa el cliente compartido `api` (`src/services/apiClient.js`). El backend no expone un endpoint propio de lectura del historial: el historial llega anidado en `GET /api/pets/{id}` dentro del campo `medicalHistory`. El servicio lee esa respuesta y la normaliza para la vista (el campo del back `sterilized` se expone como `isSterilized`). Si la mascota no existe (HTTP 404), se muestra "La mascota indicada no fue encontrada."; si la mascota existe pero no tiene historial, se informa su ausencia. El comportamiento está validado con Vitest y React Testing Library mockeando el servicio.
 
-Ejecución de pruebas
+### Ejecución de pruebas
 Ejecución general:
+```bash
 npm test
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-npx vitest src/pages/MedicalHistoryPage
-
-Ejecución de pruebas con cobertura
+```
+Solo esta historia:
+```bash
+npx vitest run src/pages/MedicalHistoryPage
+```
+Con cobertura:
+```bash
 npm run test:coverage
+```
 
-Pruebas manuales de integración
-
-Una vez iniciados el frontend y el backend, se deberán verificar los siguientes escenarios:
-1. Iniciar el backend en Spring Boot y ejecutar `npm run dev` en el proyecto del frontend.
-2. Acceder a la ruta con el ID de una mascota existente (ej. `/pets/1/medical-history`) y validar la renderización correcta del historial médico y los datos del animal.
-3. Ingresar un ID de mascota inexistente en la URL y comprobar que la interfaz despliega el mensaje de error: "La mascota indicada no fue encontrada."
-4. Consultar una mascota válida pero sin historial médico y verificar el mensaje preventivo en pantalla indicando que la mascota aún no posee registros médicos.
-5. Confirmar que no existan botones o formularios habilitados para modificar la información (modo de solo lectura).
-6. Desconectar el servidor backend y comprobar el manejo de errores de red en la pantalla.
+### Pruebas manuales de integración
+1. Iniciar el backend en Spring Boot (H2 vacío: cargar antes la sección "00 - Preparar datos" de la colección de Postman `MedicalHistory_API`) y ejecutar `npm run dev`.
+2. Acceder a la ruta con el ID de una mascota existente (ej. `/pets/1/medical-history`) y validar que se muestren esterilización, enfermedades, tratamiento, vacunas y los datos del animal.
+3. Ingresar un ID de mascota inexistente y comprobar el mensaje: "La mascota indicada no fue encontrada."
+4. Consultar una mascota válida sin historial y verificar el mensaje de ausencia de historial.
+5. Confirmar que la vista es de solo lectura (sin botones ni formularios de edición).
+6. Detener el backend y comprobar el manejo del error de conexión en la pantalla.
 
 ## HU10 – Gestionar historial médico
 
 **Responsables:** Andersson Marín, Sebastian Candia  
 **Ruta:** `/pets/:petId/manage-medical-history`
 
-Como veterinario, la pantalla permite registrar y actualizar el historial médico de una mascota para mantener actualizada su información de salud[span_0](start_span)[span_0](end_span).
+Como veterinario, la pantalla permite registrar y actualizar el historial médico de una mascota para mantener actualizada su información de salud.
 
 ### Estado de integración
-La interfaz proporciona un formulario controlado que consume el servicio `manageMedicalHistoryService.js` (preparado para peticiones POST y PUT al endpoint `/pets/{id}/medical-history`). Cumple con las reglas de negocio estrictas[span_1](start_span)[span_1](end_span):
-- El campo de esterilización es obligatorio[span_2](start_span)[span_2](end_span).
-- Una mascota esterilizada no puede pasar a no esterilizada[span_3](start_span)[span_3](end_span).
-- Si se agrega una nueva enfermedad, el campo de tratamiento es obligatorio[span_4](start_span)[span_4](end_span).
-- El comportamiento y los mensajes de validación están verificados con React Testing Library y Vitest.
+Formulario controlado que consume `manageMedicalHistoryService.js` sobre el cliente compartido `api`. El backend separa crear de actualizar:
+- Precarga: lee el historial anidado en `GET /api/pets/{id}` (campo `medicalHistory`, con su `id`).
+- Crear: `POST /api/pets/{petId}/medical-histories`.
+- Actualizar: `PUT /api/medical-histories/{historyId}`.
+
+El DTO del back usa `sterilized`. Al actualizar se conserva la vacuna existente (`vaccine`) para no borrarla, porque el formulario no la edita. Las reglas de negocio las valida el backend y sus mensajes se muestran en pantalla; la interfaz además valida antes de enviar:
+- El campo de esterilización es obligatorio.
+- Una mascota esterilizada no puede pasar a no esterilizada.
+- Si se registra una enfermedad nueva, el tratamiento es obligatorio.
+
+El comportamiento y los mensajes de validación están verificados con Vitest y React Testing Library mockeando el servicio.
 
 ### Ejecución de pruebas
 Ejecución general:
+```bash
 npm test
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-npx vitest src/pages/ManageMedicalHistoryPage
-
-### Ejecución de pruebas con cobertura
+```
+Solo esta historia:
+```bash
+npx vitest run src/pages/ManageMedicalHistoryPage
+```
+Con cobertura:
+```bash
 npm run test:coverage
+```
 
 ### Pruebas manuales de integración
-Una vez iniciados el frontend y el backend:
-1. Acceder a la ruta con el ID de una mascota.
-2. Intentar desmarcar la opción "Esterilizado" en una mascota que ya lo estaba y verificar que salte el aviso de validación[span_5](start_span)[span_5](end_span).
-3. Escribir una enfermedad sin especificar el tratamiento, intentar guardar, y verificar el error que exige el tratamiento[span_6](start_span)[span_6](end_span).
-4. Guardar los datos correctamente y verificar el mensaje de éxito y la actualización en el backend.
+1. Iniciar el backend (cargar antes "00 - Preparar datos" de la colección Postman `MedicalHistory_API`) y ejecutar `npm run dev`.
+2. Acceder a la ruta con el ID de una mascota (ej. `/pets/1/manage-medical-history`).
+3. En una mascota ya esterilizada, cambiar "Esterilizado" a "No" y guardar; verificar el aviso de validación.
+4. Escribir una enfermedad sin tratamiento y guardar; verificar el error que exige el tratamiento.
+5. Guardar datos válidos y verificar el mensaje de éxito y la persistencia en el backend.
 
 ---
 
@@ -358,30 +370,38 @@ Una vez iniciados el frontend y el backend:
 **Responsables:** Andersson Marín, Sebastian Candia  
 **Ruta:** `/pets/:petId/events`
 
-Como responsable del refugio, la pantalla permite consultar el listado de eventos y registrar nuevos sucesos (reportes médicos, incidentes u otros) asociados a una mascota existente[span_7](start_span)[span_7](end_span).
+Como responsable del refugio, la pantalla permite consultar el listado de eventos y registrar nuevos sucesos (reportes médicos, incidentes u otros) asociados a una mascota existente.
 
 ### Estado de integración
-La vista está dividida entre el historial cronológico y el formulario de captura[span_8](start_span)[span_8](end_span). El servicio `petEventsService.js` interactúa con el endpoint `/pets/{id}/events`. Las siguientes validaciones están implementadas e integradas[span_9](start_span)[span_9](end_span):
-- Obligatoriedad de los campos de tipo, fecha y descripción[span_10](start_span)[span_10](end_span).
-- Restricción de fechas futuras para tipos de evento "Reporte médico" o "Incidente[span_11](start_span)"[span_11](end_span).
-- Bloqueo de registro de eventos si la mascota tiene un estado de salud "Fallecido[span_12](start_span)"[span_12](end_span).
+La vista divide el historial cronológico y el formulario de captura. El servicio `petEventsService.js` usa el cliente compartido `api`. El backend no expone un `GET` de eventos por mascota: la lista llega anidada en `GET /api/pets/{id}` (campo `events`, junto con el `healthStatus` que se usa para el bloqueo por "Fallecido"). El registro se hace con `POST /api/pets/{petId}/events`.
+
+Validaciones implementadas:
+- Obligatoriedad de tipo, fecha y descripción.
+- Restricción de fechas futuras para los tipos "Reporte Médico" o "Incidente". El literal del tipo coincide exactamente con el que valida el backend (`Reporte Médico`, con tilde y mayúscula inicial).
+- Bloqueo del registro si la mascota tiene estado de salud "Fallecido".
+
+El comportamiento está verificado con Vitest y React Testing Library mockeando el servicio.
 
 ### Ejecución de pruebas
 Ejecución general:
+```bash
 npm test
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-npx vitest src/pages/PetEventsPage
-
-### Ejecución de pruebas con cobertura
+```
+Solo esta historia:
+```bash
+npx vitest run src/pages/PetEventsPage
+```
+Con cobertura:
+```bash
 npm run test:coverage
+```
 
 ### Pruebas manuales de integración
-Una vez iniciados el frontend y el backend:
-1. Acceder a la ruta de eventos de una mascota con estado "Fallecido" y comprobar que la interfaz impida asociar nuevos eventos[span_13](start_span)[span_13](end_span).
-2. En el formulario, seleccionar "Incidente", colocar una fecha correspondiente al día de mañana y verificar que el sistema detenga el registro e informe el error de fecha futura[span_14](start_span)[span_14](end_span).
-3. Intentar guardar el formulario con campos vacíos y verificar el aviso de datos obligatorios[span_15](start_span)[span_15](end_span).
-4. Registrar un evento válido y confirmar que aparezca listado automáticamente en el historial de eventos.
+1. Iniciar el backend (cargar antes "00 - Preparar datos" de la colección Postman `PetEvent_API`) y ejecutar `npm run dev`.
+2. Acceder a los eventos de una mascota con estado "Fallecido" y comprobar que la interfaz impida registrar nuevos eventos.
+3. Seleccionar "Reporte Médico" o "Incidente" con una fecha futura y verificar el error de fecha futura.
+4. Guardar con campos vacíos y verificar el aviso de datos obligatorios.
+5. Registrar un evento válido y confirmar que aparezca en el historial.
 
 ## HU12 – Gestionar información del adoptante
 
