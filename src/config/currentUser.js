@@ -10,8 +10,8 @@ export const ROLES = {
 }
 
 export const CURRENT_USER = {
-  userId: 12,
-  adopterId: 12,
+  userId: 1,
+  adopterId: 1,
   name: 'María Gómez',
   role: ROLES.ADOPTER,
 }

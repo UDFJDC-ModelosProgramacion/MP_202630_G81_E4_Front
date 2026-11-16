@@ -1,4 +1,5 @@
 import { beforeEach, describe, it, expect } from 'vitest'
+import { CURRENT_USER } from '../config/currentUser'
 import {
   createAdoptionRequest,
   listAdoptionRequests,
@@ -6,8 +7,10 @@ import {
   resetAdoptionRequests,
 } from './adoptionRequestService'
 
+const ADOPTER_ID = CURRENT_USER.adopterId
+
 const validRequest = {
-  adopterId: 12,
+  adopterId: ADOPTER_ID,
   petId: 4,
   dateRequest: '2026-10-25',
   description: 'Tengo un patio cercado.',
@@ -21,19 +24,19 @@ describe('adoptionRequestService', () => {
   })
 
   it('lists the requests of an adopter, newest first, with their pet', async () => {
-    const requests = await listAdoptionRequests(12)
+    const requests = await listAdoptionRequests(ADOPTER_ID)
     expect(requests.map((request) => request.pet.name)).toEqual(['Luna', 'Max', 'Nala'])
   })
 
   it('lists nothing for an adopter without requests', async () => {
-    expect(await listAdoptionRequests(13)).toEqual([])
+    expect(await listAdoptionRequests(ADOPTER_ID + 1)).toEqual([])
   })
 
   it('registers a pending request and shows it afterwards', async () => {
     const created = await createAdoptionRequest(validRequest)
     expect(created.status).toBe('PENDIENTE')
     expect(created.pet.name).toBe('Toby')
-    expect(await listAdoptionRequests(12)).toHaveLength(4)
+    expect(await listAdoptionRequests(ADOPTER_ID)).toHaveLength(4)
   })
 
   it('rejects an adopter that is not valid', async () => {
