@@ -28,7 +28,7 @@ export default function FollowUpList() {
         if (!cancelled) setLoading(false)
       }
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     void load()
     return () => {
       cancelled = true

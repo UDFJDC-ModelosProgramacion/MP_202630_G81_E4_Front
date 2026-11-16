@@ -16,12 +16,17 @@ const toPet = (dto) => ({
 
 // Criterio HU01: Solo 'Disponible' y con salud diferente a 'Enfermo' o 'En tratamiento'
 const filterAvailable = (pets) =>
-  pets.filter(
-    (pet) =>
-      pet.adoptionStatus === 'Disponible' &&
-      pet.healthStatus !== 'Enfermo' &&
-      pet.healthStatus !== 'En tratamiento',
-  )
+  pets.filter((pet) => {
+    const adoption = pet.adoptionStatus?.toUpperCase()
+    const health = pet.healthStatus?.toUpperCase()
+
+    return (
+      adoption === 'DISPONIBLE' &&
+      health !== 'ENFERMO' &&
+      health !== 'EN TRATAMIENTO' &&
+      health !== 'EN_TRATAMIENTO'
+    )
+  })
 
 export const getAvailablePets = async () => {
   const pets = await api.get('/pets')

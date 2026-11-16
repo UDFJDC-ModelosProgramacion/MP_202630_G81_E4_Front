@@ -1,19 +1,29 @@
 .bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: var(--spacing);
   padding: 0.75rem 1.5rem;
   background: var(--color-primary);
 }
 
 .logo {
-  color: #ffffff;
+  color: var(--color-surface);
   font-weight: 700;
   text-decoration: none;
 }
 
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+
 .menu {
   display: flex;
+  flex-wrap: wrap;
   gap: 1.25rem;
   margin: 0;
   padding: 0;
@@ -21,12 +31,38 @@
 }
 
 .link {
-  color: #dbeafe;
+  color: var(--color-surface);
+  opacity: 0.85;
   text-decoration: none;
 }
 
 .link:hover,
 .active {
-  color: #ffffff;
+  color: var(--color-surface);
+  opacity: 1;
   text-decoration: underline;
+}
+
+.roleBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.roleLabel {
+  margin: 0;
+  color: var(--color-surface);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.roleSelect {
+  width: auto;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  cursor: pointer;
 }
