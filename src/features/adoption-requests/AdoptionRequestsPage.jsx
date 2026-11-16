@@ -1,6 +1,6 @@
-
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { adoptionRequestsApi } from '../../api/adoptionRequests'
+import { getAdoptionRequests, updateAdoptionRequest } from '../../services/adoptionRequestsService'
+import { toBackDate } from '../../utils/backDate'
 import styles from './AdoptionRequestsPage.module.css'
 
 const STATUS = {
@@ -70,7 +70,7 @@ export default function AdoptionRequestsPage() {
     setLoadError('')
 
     try {
-      const data = await adoptionRequestsApi.list()
+      const data = await getAdoptionRequests()
       setRequests(Array.isArray(data) ? data : [])
     } catch (error) {
       setLoadError(error.message)
@@ -82,7 +82,7 @@ export default function AdoptionRequestsPage() {
   useEffect(() => {
     let active = true
 
-    adoptionRequestsApi.list()
+    getAdoptionRequests()
       .then((data) => {
         if (active) {
           setRequests(Array.isArray(data) ? data : [])
@@ -142,7 +142,7 @@ export default function AdoptionRequestsPage() {
     setBusyId(item.id)
 
     try {
-      await adoptionRequestsApi.update(item.id, {
+      await updateAdoptionRequest(item.id, {
         id: item.id,
         requestId: item.requestId,
         dateRequest: item.dateRequest,
@@ -188,10 +188,10 @@ export default function AdoptionRequestsPage() {
     setBusyId(editing.id)
 
     try {
-      await adoptionRequestsApi.update(editing.id, {
+      await updateAdoptionRequest(editing.id, {
         id: editing.id,
         requestId: editing.requestId,
-        dateRequest: `${editDate}T00:00:00.000Z`,
+        dateRequest: toBackDate(editDate),
         status: normalizeStatus(editing.status),
         description: editDescription,
         adopter: editing.adopter?.id

@@ -1,123 +1,220 @@
-import { beforeEach, describe, it, expect } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { api } from './apiClient'
 import {
   createMessage,
   deleteMessage,
   listMessages,
   markAsRead,
-  resetMessages,
   updateMessage,
 } from './messageService'
 
-describe('messageService', () => {
-  beforeEach(() => resetMessages())
+// El service ya habla con el back: se mockea apiClient para que la prueba
+// no dependa de que el back esté corriendo (Jenkins no tiene Spring Boot).
+vi.mock('./apiClient', () => ({
+  api: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+}))
 
-  it('lists the messages', async () => {
-    expect(await listMessages()).toHaveLength(5)
+const unreadDto = {
+  id: 1,
+  content: 'Hola, ¿cómo va la solicitud?',
+  date: '2026-10-21',
+  read: false,
+  sender: { id: 1, name: 'María Gómez', email: 'maria@example.com' },
+  receiver: { id: 2, name: 'Carlos Ruiz', email: 'carlos@example.com' },
+}
+
+beforeEach(() => vi.clearAllMocks())
+
+describe('messageService', () => {
+  describe('listMessages', () => {
+    it('lists the messages and translates the DTO to the shape of the screen', async () => {
+      api.get.mockResolvedValue([unreadDto])
+
+      const list = await listMessages()
+
+      expect(api.get).toHaveBeenCalledWith('/messages')
+      expect(list).toEqual([
+        {
+          id: 1,
+          senderId: 1,
+          receiverId: 2,
+          content: 'Hola, ¿cómo va la solicitud?',
+          date: '2026-10-21',
+          read: false,
+        },
+      ])
+    })
+
+    it('keeps only the day of the date and tolerates missing users or date', async () => {
+      api.get.mockResolvedValue([
+        { ...unreadDto, date: '2026-10-21T05:00:00.000+00:00' },
+        { ...unreadDto, id: 2, date: null, sender: null, receiver: null },
+      ])
+
+      const [first, second] = await listMessages()
+
+      expect(first.date).toBe('2026-10-21')
+      expect(second).toMatchObject({ date: '', senderId: null, receiverId: null })
+    })
+
+    it('lets the error of the back go up when listing fails', async () => {
+      api.get.mockRejectedValue(new Error('No hay conexión con el servidor.'))
+
+      await expect(listMessages()).rejects.toThrow('No hay conexión con el servidor.')
+    })
   })
 
   describe('createMessage', () => {
-    it('creates an unread message', async () => {
-      const created = await createMessage({ senderId: 12, receiverId: 8, content: 'Hola' })
-      expect(created.read).toBe(false)
-      expect(created.id).toBe(6)
-      expect(await listMessages()).toHaveLength(6)
+    it('sends the message as unread with sender, receiver and today by default', async () => {
+      api.post.mockResolvedValue({ ...unreadDto, id: 7 })
+
+      const created = await createMessage({ senderId: 1, receiverId: 2, content: 'Hola' })
+
+      const [path, body] = api.post.mock.calls[0]
+      expect(path).toBe('/messages')
+      expect(body).toEqual({
+        content: 'Hola',
+        date: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+        read: false,
+        sender: { id: 1 },
+        receiver: { id: 2 },
+      })
+      expect(created.id).toBe(7)
     })
 
-    it('rejects an empty content', async () => {
-      await expect(createMessage({ senderId: 12, receiverId: 8, content: '  ' })).rejects.toThrow(
+    it('uses the date that it receives', async () => {
+      api.post.mockResolvedValue(unreadDto)
+
+      await createMessage({ senderId: 1, receiverId: 2, content: 'Hola', date: '2026-11-01' })
+
+      expect(api.post.mock.calls[0][1].date).toBe('2026-11-01')
+    })
+
+    it('does not send the receiver when there is none so the back explains it', async () => {
+      api.post.mockRejectedValue(new Error('El mensaje debe tener un destinatario.'))
+
+      await expect(createMessage({ senderId: 1, receiverId: null, content: 'Hola' })).rejects.toThrow(
+        'El mensaje debe tener un destinatario.',
+      )
+      expect(api.post.mock.calls[0][1].receiver).toBeUndefined()
+    })
+
+    it('does not send the sender when there is none', async () => {
+      api.post.mockRejectedValue(new Error('El mensaje debe tener un remitente.'))
+
+      await expect(createMessage({ receiverId: 2, content: 'Hola' })).rejects.toThrow(
+        'El mensaje debe tener un remitente.',
+      )
+      expect(api.post.mock.calls[0][1].sender).toBeUndefined()
+    })
+
+    it('lets the business rule error of the back go up when the content is empty', async () => {
+      api.post.mockRejectedValue(new Error('El contenido del mensaje es obligatorio.'))
+
+      await expect(createMessage({ senderId: 1, receiverId: 2, content: ' ' })).rejects.toThrow(
         'El contenido del mensaje es obligatorio.',
       )
     })
 
-    it('rejects a missing sender', async () => {
-      await expect(createMessage({ receiverId: 8, content: 'Hola' })).rejects.toThrow(
-        'El mensaje debe tener un remitente.',
-      )
-    })
+    it('lets the business rule error of the back go up when it is a message to oneself', async () => {
+      api.post.mockRejectedValue(new Error('Un usuario no puede enviarse un mensaje a sí mismo.'))
 
-    it('rejects a missing receiver', async () => {
-      await expect(createMessage({ senderId: 12, content: 'Hola' })).rejects.toThrow(
-        'El mensaje debe tener un destinatario.',
-      )
-    })
-
-    it('rejects a message to oneself', async () => {
-      await expect(createMessage({ senderId: 12, receiverId: 12, content: 'Hola' })).rejects.toThrow(
+      await expect(createMessage({ senderId: 1, receiverId: 1, content: 'Hola' })).rejects.toThrow(
         'Un usuario no puede enviarse un mensaje a sí mismo.',
-      )
-    })
-
-    it('rejects a sender that does not exist', async () => {
-      await expect(createMessage({ senderId: 99, receiverId: 8, content: 'Hola' })).rejects.toThrow(
-        'El usuario remitente con ID 99 no existe.',
-      )
-    })
-
-    it('rejects a receiver that does not exist', async () => {
-      await expect(createMessage({ senderId: 12, receiverId: 99, content: 'Hola' })).rejects.toThrow(
-        'El usuario destinatario con ID 99 no existe.',
       )
     })
   })
 
   describe('updateMessage', () => {
-    it('edits an unread message', async () => {
+    it('sends the whole message with the new content, because the PUT replaces it', async () => {
+      api.get.mockResolvedValue(unreadDto)
+      api.put.mockResolvedValue({ ...unreadDto, content: 'Texto nuevo' })
+
       const updated = await updateMessage(1, { content: 'Texto nuevo' })
+
+      expect(api.get).toHaveBeenCalledWith('/messages/1')
+      expect(api.put).toHaveBeenCalledWith('/messages/1', {
+        content: 'Texto nuevo',
+        date: '2026-10-21',
+        read: false,
+        sender: { id: 1 },
+        receiver: { id: 2 },
+      })
       expect(updated.content).toBe('Texto nuevo')
     })
 
-    it('does not edit a message that was already read', async () => {
-      await expect(updateMessage(2, { content: 'Texto nuevo' })).rejects.toThrow(
+    it('lets the business rule error of the back go up when the message was read', async () => {
+      api.get.mockResolvedValue({ ...unreadDto, read: true })
+      api.put.mockRejectedValue(new Error('No se puede modificar un mensaje que ya fue leído.'))
+
+      await expect(updateMessage(1, { content: 'Otro' })).rejects.toThrow(
         'No se puede modificar un mensaje que ya fue leído.',
       )
     })
 
-    it('does not accept an empty content', async () => {
-      await expect(updateMessage(1, { content: '' })).rejects.toThrow(
-        'El contenido del mensaje es obligatorio.',
-      )
-    })
+    it('lets the not found error of the back go up when the message does not exist', async () => {
+      api.get.mockRejectedValue(new Error('El mensaje con ID 99 no existe.'))
 
-    it('reports a message that does not exist', async () => {
       await expect(updateMessage(99, { content: 'Hola' })).rejects.toThrow(
         'El mensaje con ID 99 no existe.',
       )
+      expect(api.put).not.toHaveBeenCalled()
     })
   })
 
   describe('markAsRead', () => {
-    it('lets the receiver mark the message as read', async () => {
-      const updated = await markAsRead(4, 12)
+    it('marks the message as read keeping the rest of its fields', async () => {
+      api.get.mockResolvedValue(unreadDto)
+      api.put.mockResolvedValue({ ...unreadDto, read: true })
+
+      const updated = await markAsRead(1, 2)
+
+      expect(api.put).toHaveBeenCalledWith('/messages/1', {
+        content: 'Hola, ¿cómo va la solicitud?',
+        date: '2026-10-21',
+        read: true,
+        sender: { id: 1 },
+        receiver: { id: 2 },
+      })
       expect(updated.read).toBe(true)
     })
 
-    it('does not let anyone else mark it as read', async () => {
-      await expect(markAsRead(1, 12)).rejects.toThrow(
+    it('does not let anyone but the receiver mark it as read', async () => {
+      api.get.mockResolvedValue(unreadDto)
+
+      await expect(markAsRead(1, 1)).rejects.toThrow(
         'Solo el destinatario puede marcar un mensaje como leído.',
       )
+      expect(api.put).not.toHaveBeenCalled()
+    })
+
+    it('does nothing when the message was already read', async () => {
+      api.get.mockResolvedValue({ ...unreadDto, read: true })
+
+      const message = await markAsRead(1, 2)
+
+      expect(message.read).toBe(true)
+      expect(api.put).not.toHaveBeenCalled()
     })
   })
 
   describe('deleteMessage', () => {
-    it('deletes a message that was read', async () => {
-      await deleteMessage(2, 12)
-      expect(await listMessages()).toHaveLength(4)
+    it('deletes the message', async () => {
+      api.delete.mockResolvedValue(null)
+
+      await deleteMessage(4)
+
+      expect(api.delete).toHaveBeenCalledWith('/messages/4')
     })
 
-    it('does not delete a message that was not read yet', async () => {
-      await expect(deleteMessage(1, 12)).rejects.toThrow(
+    it('lets the business rule error of the back go up when the message was not read', async () => {
+      api.delete.mockRejectedValue(
+        new Error('No se puede eliminar un mensaje que aún no ha sido leído por el destinatario.'),
+      )
+
+      await expect(deleteMessage(1)).rejects.toThrow(
         'No se puede eliminar un mensaje que aún no ha sido leído por el destinatario.',
       )
-    })
-
-    it('does not let someone who is not part of the conversation delete it', async () => {
-      await expect(deleteMessage(2, 7)).rejects.toThrow(
-        'Solo el remitente o el destinatario pueden eliminar el mensaje.',
-      )
-    })
-
-    it('reports a message that does not exist', async () => {
-      await expect(deleteMessage(99, 12)).rejects.toThrow('El mensaje con ID 99 no existe.')
     })
   })
 })

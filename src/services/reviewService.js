@@ -1,63 +1,48 @@
+import { api } from './apiClient'
 import { CURRENT_USER } from '../config/currentUser'
-// Sample data. When the back is connected, replace each function body
-// with a fetch to /api/... and keep the same signatures.
-const pets = {
-  1: {
-    id: 1,
-    name: 'Luna',
-    breed: 'Labrador',
-    age: '2 años',
-    sex: 'Hembra',
-    size: 'Mediano',
-    status: 'Disponible para adopción',
-  },
-    2: {
-    id: 2,
-    name: 'Max',
-    breed: 'Beagle',
-    age: '4 años',
-    sex: 'Macho',
-    size: 'Pequeño',
-    status: 'Disponible para adopción',
-  },
+
+// GET devuelve ReviewDetailDTO (pet y adopter anidados)
+const toReview = (dto) => ({
+  id: dto.id,
+  adopterName: dto.adopter?.name ?? 'Adoptante',
+  rating: dto.rating,
+  comment: dto.comment,
+  date: dto.date,
+})
+
+export const getReviews = async (petId) => {
+  const data = await api.get(`/pets/${petId}/reviews`)
+  return data.map(toReview)
 }
 
-const reviewsByPet = {
-  1: [
-    { id: 1, adopterName: 'María P.', rating: 5, comment: 'Muy cariñosa y tranquila. Se adaptó rápido a casa.' },
-    { id: 2, adopterName: 'Julián R.', rating: 4, comment: 'Buena con los niños, solo necesita paseos largos.' },
-    { id: 3, adopterName: 'Sofía M.', rating: 5, comment: 'La mejor decisión. Totalmente recomendada.' },
-  ],
-}
-
-let nextId = 4
-
-const respond = (value) => new Promise((resolve) => setTimeout(() => resolve(value), 300))
-
-const fail = (message) =>
-  new Promise((_, reject) => setTimeout(() => reject(new Error(message)), 300))
-
-export function getPet(petId) {
-  const pet = pets[petId]
-  return pet ? respond(pet) : fail('Mascota no encontrada')
-}
-
-export function getReviews(petId) {
-  return respond([...(reviewsByPet[petId] ?? [])])
-}
-
-export function createReview(petId, { rating, comment }) {
-  if (!pets[petId]) {
-    return fail('Mascota no encontrada')
-  }
-    const review = {
-    id: nextId++,
-    adopterId: CURRENT_USER.adopterId,
-    adopterName: CURRENT_USER.name,
+// El create recibe el DetailDTO: pet y adopter van como objetos con id
+export const createReview = async (petId, { rating, comment }) => {
+  const dto = await api.post('/reviews', {
     rating,
-    comment: comment.trim(),
+    comment,
     date: new Date().toISOString(),
+    pet: { id: Number(petId) },
+    adopter: { id: CURRENT_USER.adopterId },
+  })
+  // POST devuelve el DTO básico (sin adopter): el nombre sale de CURRENT_USER
+  return {
+    id: dto.id,
+    adopterName: CURRENT_USER.name,
+    rating: dto.rating,
+    comment: dto.comment,
+    date: dto.date,
   }
-  reviewsByPet[petId] = [review, ...(reviewsByPet[petId] ?? [])]
-  return respond(review)
+}
+
+export const getPet = async (petId) => {
+  const dto = await api.get(`/pets/${petId}`)
+  return {
+    id: dto.id,
+    name: dto.name,
+    breed: dto.breed,
+    age: dto.age,
+    sex: dto.sex,
+    size: dto.size,
+    status: dto.adoptionStatus,
+  }
 }

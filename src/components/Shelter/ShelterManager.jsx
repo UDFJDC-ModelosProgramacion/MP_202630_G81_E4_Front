@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Button from '../Button/Button'
 import Card from '../Card/Card'
 import ScreenState from '../ScreenState/ScreenState'
@@ -12,11 +13,11 @@ import styles from './ShelterManager.module.css'
 
 const EMPTY_FORM = {
   nit: '',
-  name: '',
-  address: '',
-  phone: '',
+  city: '',
   capacity: '',
-  email: '',
+  description: '',
+  photo: '',
+  video: '',
 }
 
 export default function ShelterManager() {
@@ -64,12 +65,12 @@ export default function ShelterManager() {
   function openEdit(shelter) {
     setEditingId(shelter.id)
     setForm({
-      nit: shelter.nit,
-      name: shelter.name,
-      address: shelter.address || '',
-      phone: shelter.phone || '',
-      capacity: shelter.capacity,
-      email: shelter.email || '',
+      nit: String(shelter.nit ?? ''),
+      city: shelter.city || '',
+      capacity: shelter.capacity ?? '',
+      description: shelter.description || '',
+      photo: shelter.photo || '',
+      video: shelter.video || '',
     })
     setShowForm(true)
     setError(null)
@@ -85,7 +86,8 @@ export default function ShelterManager() {
 
   function validate() {
     if (!form.nit.trim()) return 'El NIT es obligatorio'
-    if (!form.name.trim()) return 'El nombre es obligatorio'
+    if (!/^\d+$/.test(form.nit.trim())) return 'El NIT debe contener solo números'
+    if (!form.city.trim()) return 'La ciudad es obligatoria'
     if (!form.capacity || Number(form.capacity) <= 0)
       return 'La capacidad debe ser un número mayor a 0'
     return null
@@ -102,19 +104,11 @@ export default function ShelterManager() {
     setError(null)
     setSuccess(null)
     try {
-      const payload = {
-        nit: form.nit.trim(),
-        name: form.name.trim(),
-        address: form.address.trim(),
-        phone: form.phone.trim(),
-        capacity: Number(form.capacity),
-        email: form.email.trim(),
-      }
       if (editingId) {
-        await updateShelter(editingId, payload)
+        await updateShelter(editingId, form)
         setSuccess('Refugio actualizado correctamente')
       } else {
-        await createShelter(payload)
+        await createShelter(form)
         setSuccess('Refugio registrado correctamente')
       }
       cancelForm()
@@ -143,9 +137,9 @@ export default function ShelterManager() {
     if (!search.trim()) return true
     const q = search.toLowerCase()
     return (
-      s.name.toLowerCase().includes(q) ||
-      s.nit.toLowerCase().includes(q) ||
-      (s.address || '').toLowerCase().includes(q)
+      String(s.nit).includes(q) ||
+      (s.city || '').toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q)
     )
   })
 
@@ -187,17 +181,17 @@ export default function ShelterManager() {
                   name="nit"
                   value={form.nit}
                   onChange={handleChange}
-                  placeholder="900123456-1"
+                  placeholder="900123456"
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="name">Nombre *</label>
+                <label htmlFor="city">Ciudad *</label>
                 <input
-                  id="name"
-                  name="name"
-                  value={form.name}
+                  id="city"
+                  name="city"
+                  value={form.city}
                   onChange={handleChange}
-                  placeholder="Huellas Felices"
+                  placeholder="Bogotá"
                 />
               </div>
               <div className={styles.field}>
@@ -213,34 +207,13 @@ export default function ShelterManager() {
                 />
               </div>
               <div className={styles.field}>
-                <label htmlFor="phone">Teléfono</label>
+                <label htmlFor="description">Descripción</label>
                 <input
-                  id="phone"
-                  name="phone"
-                  value={form.phone}
+                  id="description"
+                  name="description"
+                  value={form.description}
                   onChange={handleChange}
-                  placeholder="3105551234"
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="email">Correo electrónico</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="contacto@refugio.org"
-                />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor="address">Dirección</label>
-                <input
-                  id="address"
-                  name="address"
-                  value={form.address}
-                  onChange={handleChange}
-                  placeholder="Calle 72 #10-25, Bogotá"
+                  placeholder="Refugio para perros y gatos"
                 />
               </div>
             </div>
@@ -265,7 +238,7 @@ export default function ShelterManager() {
           <div className={styles.searchBar}>
             <input
               type="search"
-              placeholder="Buscar por nombre, NIT o dirección"
+              placeholder="Buscar por NIT, ciudad o descripción"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               aria-label="Buscar refugios"
@@ -286,11 +259,9 @@ export default function ShelterManager() {
                   <thead>
                     <tr>
                       <th>NIT</th>
-                      <th>Nombre</th>
-                      <th>Dirección</th>
-                      <th>Teléfono</th>
+                      <th>Ciudad</th>
                       <th>Capacidad</th>
-                      <th>Correo</th>
+                      <th>Descripción</th>
                       <th>Acciones</th>
                     </tr>
                   </thead>
@@ -298,11 +269,9 @@ export default function ShelterManager() {
                     {filtered.map((s) => (
                       <tr key={s.id}>
                         <td className={styles.code}>{s.nit}</td>
-                        <td className={styles.name}>{s.name}</td>
-                        <td>{s.address || '—'}</td>
-                        <td>{s.phone || '—'}</td>
+                        <td className={styles.name}>{s.city}</td>
                         <td>{s.capacity}</td>
-                        <td>{s.email || '—'}</td>
+                        <td>{s.description || '—'}</td>
                         <td>
                           <div className={styles.rowActions}>
                             <Button variant="secondary" onClick={() => openEdit(s)}>
@@ -311,6 +280,12 @@ export default function ShelterManager() {
                             <Button variant="danger" onClick={() => handleDelete(s.id)}>
                               Eliminar
                             </Button>
+                            <Link
+                              to={`/shelters/${s.id}/veterinarians`}
+                              className={styles.vetLink}
+                            >
+                              Veterinarios
+                            </Link>
                           </div>
                         </td>
                       </tr>

@@ -1,77 +1,57 @@
 # Pets – Front-end
 
-Aplicación web para gestionar adopciones de mascotas. Proyecto de Modelos de Programación, Universidad Distrital, grupo G81.
-
-## Tecnologías
-
-- React + Vite
-- JavaScript (JSX)
-- React Router
-- CSS Modules
-- Vitest y React Testing Library
+Aplicación web para gestionar adopciones de mascotas. Proyecto de Modelos de Programación, Universidad Distrital Francisco José de Caldas, grupo G81.
 
 ## Requisitos
 
-- Node.js compatible con la versión de Vite definida en `package.json`.
-- Backend Spring Boot ejecutándose en `http://localhost:8080`.
+Antes de ejecutar el proyecto, asegúrate de tener instalado:
+
+- Node.js y npm.
+- El backend Spring Boot en ejecución en `http://localhost:8080`.
 
 ## Instalación y ejecución
 
-```bash
-npm ci
-npm run dev
-```
+1. Clonar el repositorio:
 
-Abre la URL que muestre Vite (normalmente `http://localhost:5173`). La configuración de Vite reenvía las peticiones `/api` a `http://localhost:8080`.
+   ```bash
+   git clone https://github.com/UDFJDC-ModelosProgramacion/MP_202630_G81_E4_Front.git
+   ```
 
-## Scripts
+2. Ingresar a la carpeta del proyecto:
+
+   ```bash
+   cd MP_202630_G81_E4_Front
+   ```
+
+3. Instalar las dependencias:
+
+   ```bash
+   npm ci
+   ```
+
+4. Iniciar el servidor de desarrollo:
+
+   ```bash
+   npm run dev
+   ```
+
+5. Abrir en el navegador la dirección que muestra Vite, normalmente:
+
+   `http://localhost:5173`
+
+## Ejecución de pruebas
+
+Para ejecutar las pruebas automatizadas:
 
 ```bash
 npm test
-npm run test:coverage
+```
+
+## Otros comandos
+
+```bash
 npm run lint
 npm run build
-```
-
-## Evidencia de pruebas automatizadas
-
-Las pruebas automatizadas se ejecutan en un pipeline de Jenkins (instalación, lint, build, pruebas con cobertura y análisis estático) y los resultados de calidad se revisan en SonarQube.
-
-Capturas del 08/11/2026.
-
-### Jenkins
-
-![Jenkins: etapas del pipeline](docs/jenkins-stages.png)
-
-### SonarQube
-
-![SonarQube: resumen del proyecto](docs/sonar-resumen.png)
-
-## HU01 – Consultar mascotas disponibles
-
-Ruta: `/pets`.
-
-La pantalla permite consultar y visualizar la lista de mascotas disponibles para adopción, buscar por nombre de la mascota y aplicar filtros por especie, raza o refugio. Además, la vista garantiza que solo se muestren mascotas con estado de adopción disponible y un estado de salud apto.
-
-### Estado de integración
-
-La interfaz y la lógica del servicio (petService.js) están preparadas para consumir el endpoint /pets del backend REST en Spring Boot. El comportamiento de la interfaz, el filtrado y la renderización se encuentran validados mediante pruebas automatizadas ejecutadas con Vitest y React Testing Library.
-
-### Ejecución de pruebas
-
-```bash
-npm test
-```
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-
-```bash
-npx vitest src/pages/PetsPage
-```
-
-### Ejecución de pruebas con cobertura
-
-```bash
 npm run test:coverage
 ```
 
@@ -82,7 +62,7 @@ Una vez iniciados el frontend y el backend, se deberán verificar los siguientes
 * Iniciar el backend en Spring Boot y ejecutar npm run dev en el proyecto del frontend.
 * Abrir la ruta /pets en el navegador y comprobar que se carguen las mascotas reales desde el servidor.
 * Buscar una mascota por su nombre en la barra de búsqueda y validar la actualización dinámica de la lista.
-* Aplicar filtros combinados de especie (ej. Perro/Gato), raza y refugio.
+* Aplicar filtros combinados de especie (ej. Perro/Gato), raza y refugio. Nota: el backend entrega la especie en el campo `specie` y el refugio como objeto sin nombre, por lo que la vista muestra la ciudad del refugio (`shelter.city`); el servicio `petService.js` normaliza ambos.
 * Verificar que únicamente se muestren mascotas cuyo estado de adopción sea "Disponible".
 * Confirmar que aquellas mascotas cuyo estado de salud sea "Enfermo" o "En tratamiento" no aparezcan en la grilla de adopción.
 * Ingresar un filtro o búsqueda sin coincidencias y verificar que la interfaz despliegue el mensaje: "No se encontraron mascotas que cumplan con los filtros aplicados."
@@ -262,7 +242,7 @@ npx vitest run --coverage
 
 Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
 
-La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), la condición de la mascota (Excelente, Buena, Regular o Mala) y las notas u observaciones. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
 
 ### Pruebas manuales sugeridas
 
@@ -272,15 +252,15 @@ La pantalla permite registrar y actualizar un seguimiento veterinario asociado a
 4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
 5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
 6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
-7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
-8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
-9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+7. Abrir `/follow-ups/1/edit` (o el ID numérico de un seguimiento existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o la condición de un seguimiento y comprobar que se guarden los cambios.
+9. Cambiar la fecha de un seguimiento que ya tiene notas y comprobar que se muestre el error 412 del backend.
 10. Apagar el backend y comprobar que la pantalla muestre un error.
 
 ## HU07 – Registrar seguimientos veterinarios
 Rutas: `/follow-ups/new` (registrar) y `/follow-ups/:id/edit` (actualizar).
 
-La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), el estado y las notas u observaciones. Permite programar el seguimiento inicial requerido para confirmar una adopción como ACTIVA. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+La pantalla permite registrar y actualizar un seguimiento veterinario asociado a una adopción activa y a una mascota existente. El formulario incluye la adopción activa, la mascota, el veterinario responsable, la fecha de seguimiento (obligatoria), la condición de la mascota (Excelente, Buena, Regular o Mala) y las notas u observaciones. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
 
 ### Pruebas manuales sugeridas
 1. Iniciar el backend y ejecutar `npm run dev`.
@@ -289,15 +269,15 @@ La pantalla permite registrar y actualizar un seguimiento veterinario asociado a
 4. Registrar un seguimiento con datos válidos (adopción activa, mascota, veterinario, fecha) y comprobar el mensaje de éxito.
 5. Intentar registrar un seguimiento con una adopción inactiva o inexistente; comprobar que se muestre el error del backend.
 6. Intentar registrar un seguimiento para una mascota o veterinario inexistente; comprobar que se informe que no fue encontrado.
-7. Abrir `/follow-ups/FU-001/edit` (o un ID existente) y comprobar que el formulario se precargue con los datos del seguimiento.
-8. Actualizar las notas o el estado de un seguimiento y comprobar que se guarden los cambios.
-9. Seleccionar estado "Programado" para simular el seguimiento inicial de una adopción.
+7. Abrir `/follow-ups/1/edit` (o el ID numérico de un seguimiento existente) y comprobar que el formulario se precargue con los datos del seguimiento.
+8. Actualizar las notas o la condición de un seguimiento y comprobar que se guarden los cambios.
+9. Cambiar la fecha de un seguimiento que ya tiene notas y comprobar que se muestre el error 412 del backend.
 10. Apagar el backend y comprobar que la pantalla muestre un error.
 
 ## HU08 – Consultar seguimientos veterinarios
 **Rutas:** `/follow-ups` (lista con filtros) y `/follow-ups/:id` (detalle).
 
-La pantalla permite consultar la lista de seguimientos veterinarios registrados, filtrar por nombre de mascota o por código de adopción, y ver el detalle completo de un seguimiento por su ID. Cada fila muestra la fecha, la mascota, la adopción (con adoptante), el veterinario responsable y el estado. Si no existen seguimientos o no hay coincidencias con los filtros, se muestra un mensaje informativo. Si el seguimiento consultado no existe, se presenta el mensaje de error correspondiente.
+La pantalla permite consultar la lista de seguimientos veterinarios registrados, filtrar por nombre de mascota o por código de adopción, y ver el detalle completo de un seguimiento por su ID. Cada fila muestra la fecha, la mascota, la adopción (con adoptante), el veterinario responsable y la condición de la mascota. Si no existen seguimientos o no hay coincidencias con los filtros, se muestra un mensaje informativo. Si el seguimiento consultado no existe, se presenta el mensaje de error correspondiente.
 
 ### Pruebas manuales sugeridas
 1. Iniciar el backend y ejecutar `npm run dev`.
@@ -315,61 +295,73 @@ La pantalla permite consultar la lista de seguimientos veterinarios registrados,
 ## HU09 – Consultar historial médico
 **Ruta:** `/pets/:petId/medical-history`
 
-La pantalla permite consultar en modo de solo lectura el historial médico de una mascota específica. Despliega información clínica como esterilización, enfermedades registradas, tratamiento actual y datos básicos de la mascota.
+La pantalla permite consultar en modo de solo lectura el historial médico de una mascota específica. Despliega información clínica (esterilización, enfermedades, tratamiento y vacunas) y datos básicos de la mascota.
 
-Estado de integración
-La interfaz y la lógica del servicio (`medicalHistoryService.js`) están preparadas para consumir el endpoint `/pets/{id}/medical-history` del backend en Spring Boot. El comportamiento de la interfaz, el manejo de estados de error (HTTP 404) y la advertencia por ausencia de historial clínico se encuentran validados mediante pruebas automatizadas ejecutadas con Vitest y React Testing Library.
+### Estado de integración
+Integrada con el backend a través de `medicalHistoryService.js`, que usa el cliente compartido `api` (`src/services/apiClient.js`). El backend no expone un endpoint propio de lectura del historial: el historial llega anidado en `GET /api/pets/{id}` dentro del campo `medicalHistory`. El servicio lee esa respuesta y la normaliza para la vista (el campo del back `sterilized` se expone como `isSterilized`). Si la mascota no existe (HTTP 404), se muestra "La mascota indicada no fue encontrada."; si la mascota existe pero no tiene historial, se informa su ausencia. El comportamiento está validado con Vitest y React Testing Library mockeando el servicio.
 
-Ejecución de pruebas
+### Ejecución de pruebas
 Ejecución general:
+```bash
 npm test
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-npx vitest src/pages/MedicalHistoryPage
-
-Ejecución de pruebas con cobertura
+```
+Solo esta historia:
+```bash
+npx vitest run src/pages/MedicalHistoryPage
+```
+Con cobertura:
+```bash
 npm run test:coverage
+```
 
-Pruebas manuales de integración
-
-Una vez iniciados el frontend y el backend, se deberán verificar los siguientes escenarios:
-1. Iniciar el backend en Spring Boot y ejecutar `npm run dev` en el proyecto del frontend.
-2. Acceder a la ruta con el ID de una mascota existente (ej. `/pets/1/medical-history`) y validar la renderización correcta del historial médico y los datos del animal.
-3. Ingresar un ID de mascota inexistente en la URL y comprobar que la interfaz despliega el mensaje de error: "La mascota indicada no fue encontrada."
-4. Consultar una mascota válida pero sin historial médico y verificar el mensaje preventivo en pantalla indicando que la mascota aún no posee registros médicos.
-5. Confirmar que no existan botones o formularios habilitados para modificar la información (modo de solo lectura).
-6. Desconectar el servidor backend y comprobar el manejo de errores de red en la pantalla.
+### Pruebas manuales de integración
+1. Iniciar el backend en Spring Boot (H2 vacío: cargar antes la sección "00 - Preparar datos" de la colección de Postman `MedicalHistory_API`) y ejecutar `npm run dev`.
+2. Acceder a la ruta con el ID de una mascota existente (ej. `/pets/1/medical-history`) y validar que se muestren esterilización, enfermedades, tratamiento, vacunas y los datos del animal.
+3. Ingresar un ID de mascota inexistente y comprobar el mensaje: "La mascota indicada no fue encontrada."
+4. Consultar una mascota válida sin historial y verificar el mensaje de ausencia de historial.
+5. Confirmar que la vista es de solo lectura (sin botones ni formularios de edición).
+6. Detener el backend y comprobar el manejo del error de conexión en la pantalla.
 
 ## HU10 – Gestionar historial médico
 
 **Responsables:** Andersson Marín, Sebastian Candia  
 **Ruta:** `/pets/:petId/manage-medical-history`
 
-Como veterinario, la pantalla permite registrar y actualizar el historial médico de una mascota para mantener actualizada su información de salud[span_0](start_span)[span_0](end_span).
+Como veterinario, la pantalla permite registrar y actualizar el historial médico de una mascota para mantener actualizada su información de salud.
 
 ### Estado de integración
-La interfaz proporciona un formulario controlado que consume el servicio `manageMedicalHistoryService.js` (preparado para peticiones POST y PUT al endpoint `/pets/{id}/medical-history`). Cumple con las reglas de negocio estrictas[span_1](start_span)[span_1](end_span):
-- El campo de esterilización es obligatorio[span_2](start_span)[span_2](end_span).
-- Una mascota esterilizada no puede pasar a no esterilizada[span_3](start_span)[span_3](end_span).
-- Si se agrega una nueva enfermedad, el campo de tratamiento es obligatorio[span_4](start_span)[span_4](end_span).
-- El comportamiento y los mensajes de validación están verificados con React Testing Library y Vitest.
+Formulario controlado que consume `manageMedicalHistoryService.js` sobre el cliente compartido `api`. El backend separa crear de actualizar:
+- Precarga: lee el historial anidado en `GET /api/pets/{id}` (campo `medicalHistory`, con su `id`).
+- Crear: `POST /api/pets/{petId}/medical-histories`.
+- Actualizar: `PUT /api/medical-histories/{historyId}`.
+
+El DTO del back usa `sterilized`. Al actualizar se conserva la vacuna existente (`vaccine`) para no borrarla, porque el formulario no la edita. Las reglas de negocio las valida el backend y sus mensajes se muestran en pantalla; la interfaz además valida antes de enviar:
+- El campo de esterilización es obligatorio.
+- Una mascota esterilizada no puede pasar a no esterilizada.
+- Si se registra una enfermedad nueva, el tratamiento es obligatorio.
+
+El comportamiento y los mensajes de validación están verificados con Vitest y React Testing Library mockeando el servicio.
 
 ### Ejecución de pruebas
 Ejecución general:
+```bash
 npm test
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-npx vitest src/pages/ManageMedicalHistoryPage
-
-### Ejecución de pruebas con cobertura
+```
+Solo esta historia:
+```bash
+npx vitest run src/pages/ManageMedicalHistoryPage
+```
+Con cobertura:
+```bash
 npm run test:coverage
+```
 
 ### Pruebas manuales de integración
-Una vez iniciados el frontend y el backend:
-1. Acceder a la ruta con el ID de una mascota.
-2. Intentar desmarcar la opción "Esterilizado" en una mascota que ya lo estaba y verificar que salte el aviso de validación[span_5](start_span)[span_5](end_span).
-3. Escribir una enfermedad sin especificar el tratamiento, intentar guardar, y verificar el error que exige el tratamiento[span_6](start_span)[span_6](end_span).
-4. Guardar los datos correctamente y verificar el mensaje de éxito y la actualización en el backend.
+1. Iniciar el backend (cargar antes "00 - Preparar datos" de la colección Postman `MedicalHistory_API`) y ejecutar `npm run dev`.
+2. Acceder a la ruta con el ID de una mascota (ej. `/pets/1/manage-medical-history`).
+3. En una mascota ya esterilizada, cambiar "Esterilizado" a "No" y guardar; verificar el aviso de validación.
+4. Escribir una enfermedad sin tratamiento y guardar; verificar el error que exige el tratamiento.
+5. Guardar datos válidos y verificar el mensaje de éxito y la persistencia en el backend.
 
 ---
 
@@ -378,30 +370,38 @@ Una vez iniciados el frontend y el backend:
 **Responsables:** Andersson Marín, Sebastian Candia  
 **Ruta:** `/pets/:petId/events`
 
-Como responsable del refugio, la pantalla permite consultar el listado de eventos y registrar nuevos sucesos (reportes médicos, incidentes u otros) asociados a una mascota existente[span_7](start_span)[span_7](end_span).
+Como responsable del refugio, la pantalla permite consultar el listado de eventos y registrar nuevos sucesos (reportes médicos, incidentes u otros) asociados a una mascota existente.
 
 ### Estado de integración
-La vista está dividida entre el historial cronológico y el formulario de captura[span_8](start_span)[span_8](end_span). El servicio `petEventsService.js` interactúa con el endpoint `/pets/{id}/events`. Las siguientes validaciones están implementadas e integradas[span_9](start_span)[span_9](end_span):
-- Obligatoriedad de los campos de tipo, fecha y descripción[span_10](start_span)[span_10](end_span).
-- Restricción de fechas futuras para tipos de evento "Reporte médico" o "Incidente[span_11](start_span)"[span_11](end_span).
-- Bloqueo de registro de eventos si la mascota tiene un estado de salud "Fallecido[span_12](start_span)"[span_12](end_span).
+La vista divide el historial cronológico y el formulario de captura. El servicio `petEventsService.js` usa el cliente compartido `api`. El backend no expone un `GET` de eventos por mascota: la lista llega anidada en `GET /api/pets/{id}` (campo `events`, junto con el `healthStatus` que se usa para el bloqueo por "Fallecido"). El registro se hace con `POST /api/pets/{petId}/events`.
+
+Validaciones implementadas:
+- Obligatoriedad de tipo, fecha y descripción.
+- Restricción de fechas futuras para los tipos "Reporte Médico" o "Incidente". El literal del tipo coincide exactamente con el que valida el backend (`Reporte Médico`, con tilde y mayúscula inicial).
+- Bloqueo del registro si la mascota tiene estado de salud "Fallecido".
+
+El comportamiento está verificado con Vitest y React Testing Library mockeando el servicio.
 
 ### Ejecución de pruebas
 Ejecución general:
+```bash
 npm test
-
-Para ejecutar únicamente la suite de esta historia de usuario:
-npx vitest src/pages/PetEventsPage
-
-### Ejecución de pruebas con cobertura
+```
+Solo esta historia:
+```bash
+npx vitest run src/pages/PetEventsPage
+```
+Con cobertura:
+```bash
 npm run test:coverage
+```
 
 ### Pruebas manuales de integración
-Una vez iniciados el frontend y el backend:
-1. Acceder a la ruta de eventos de una mascota con estado "Fallecido" y comprobar que la interfaz impida asociar nuevos eventos[span_13](start_span)[span_13](end_span).
-2. En el formulario, seleccionar "Incidente", colocar una fecha correspondiente al día de mañana y verificar que el sistema detenga el registro e informe el error de fecha futura[span_14](start_span)[span_14](end_span).
-3. Intentar guardar el formulario con campos vacíos y verificar el aviso de datos obligatorios[span_15](start_span)[span_15](end_span).
-4. Registrar un evento válido y confirmar que aparezca listado automáticamente en el historial de eventos.
+1. Iniciar el backend (cargar antes "00 - Preparar datos" de la colección Postman `PetEvent_API`) y ejecutar `npm run dev`.
+2. Acceder a los eventos de una mascota con estado "Fallecido" y comprobar que la interfaz impida registrar nuevos eventos.
+3. Seleccionar "Reporte Médico" o "Incidente" con una fecha futura y verificar el error de fecha futura.
+4. Guardar con campos vacíos y verificar el aviso de datos obligatorios.
+5. Registrar un evento válido y confirmar que aparezca en el historial.
 
 ## HU12 – Gestionar información del adoptante
 
@@ -457,15 +457,15 @@ La eliminación de un adoptante sin registros asociados (ID 13 en los datos de e
 ## HU13 – Gestionar refugios
 Ruta: `/shelters`.
 
-La pantalla permite registrar, consultar, actualizar y eliminar refugios. Se puede buscar por nombre, NIT o dirección. El formulario de registro y actualización valida que el NIT sea único y obligatorio, que el nombre sea obligatorio y que la capacidad sea un número mayor a cero. No se permite eliminar un refugio que tenga mascotas o procesos activos asociados. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
+La pantalla permite registrar, consultar, actualizar y eliminar refugios. Se puede buscar por NIT, ciudad o descripción. El formulario valida que el NIT sea obligatorio y numérico, que la ciudad sea obligatoria y que la capacidad sea un número mayor a cero; la unicidad del NIT la valida el backend. No se permite eliminar un refugio que tenga mascotas o procesos activos asociados. Las reglas de negocio se validan en el backend; los mensajes de error del API se presentan en la interfaz.
 
 ### Pruebas manuales sugeridas
-1. Iniciar el backend y ejecutar `npm run dev`.
+1. Iniciar el backend (H2 vacío: correr antes las colecciones de Postman) y ejecutar `npm run dev`.
 2. Abrir `/shelters` y comprobar que se cargue la lista de refugios.
-3. Buscar por nombre, NIT o dirección y comprobar que la lista se filtre.
-4. Registrar un refugio nuevo con NIT, nombre y capacidad válidos y comprobar que aparezca en la lista.
+3. Buscar por NIT, ciudad o descripción y comprobar que la lista se filtre.
+4. Registrar un refugio nuevo con NIT, ciudad y capacidad válidos y comprobar que aparezca en la lista.
 5. Intentar registrar un refugio con un NIT ya existente; comprobar que se muestre el error.
-6. Intentar registrar un refugio sin NIT, sin nombre o con capacidad menor o igual a cero; comprobar que se informe el campo faltante o inválido.
+6. Intentar registrar un refugio sin NIT, sin ciudad o con capacidad menor o igual a cero; comprobar que se informe el campo faltante o inválido.
 7. Actualizar los datos de un refugio existente y comprobar que se guarden los cambios.
 8. Eliminar un refugio sin mascotas asociadas y comprobar que desaparezca de la lista.
 9. Intentar eliminar un refugio con mascotas o procesos activos asociados; comprobar que se muestre el error del backend.
@@ -538,3 +538,4 @@ Con los datos de ejemplo (usuario actual: María Gómez, ID 12). Los datos de ej
 6. En "Nuevo mensaje", pulsar **Enviar mensaje** sin llenar nada; comprobar que se informe que el contenido es obligatorio.
 7. Escribir un contenido sin elegir destinatario y enviar; comprobar que se informe que el mensaje debe tener un destinatario. Comprobar además que la lista de destinatarios no incluye a María Gómez.
 8. Elegir un destinatario, escribir un contenido y enviar; comprobar el mensaje "Mensaje enviado." y que el mensaje aparezca en Enviados, seleccionado y como "No leído".
+**Nota:** El frontend utiliza el backend Spring Boot para las operaciones que requieren persistencia. La configuración de Vite redirige las peticiones realizadas a `/api` hacia `http://localhost:8080`.

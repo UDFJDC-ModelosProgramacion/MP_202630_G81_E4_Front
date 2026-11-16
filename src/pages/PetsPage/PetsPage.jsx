@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { getAvailablePets } from '../../services/petService';
 import styles from './PetsPage.module.css';
 
@@ -98,6 +99,17 @@ export const PetsPage = () => {
                 <span className={styles.badge}>
                   {pet.adoptionStatus}
                 </span>
+              </div>
+              <div className={styles.cardLinks}>
+                <Link to={`/pets/${pet.id ?? 1}/reviews`} className={styles.cardLink}>
+                  Reseñas
+                </Link>
+                <Link to={`/pets/${pet.id ?? 1}/medical-history`} className={styles.cardLink}>
+                  Historial médico
+                </Link>
+                <Link to={`/pets/${pet.id ?? 1}/events`} className={styles.cardLink}>
+                  Eventos
+                </Link>
               </div>
             </div>
           ))}

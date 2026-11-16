@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getMedicalHistory } from '../../services/medicalHistoryService';
 import styles from './MedicalHistoryPage.module.css';
 
 export const MedicalHistoryPage = () => {
   const { petId } = useParams(); // Obtiene el ID de la URL (ej: /pets/1/medical-history)
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,8 +66,8 @@ export const MedicalHistoryPage = () => {
                   <p className={styles.fieldValue}>{data.history.treatment || 'N/A'}</p>
                 </div>
                 <div className={styles.fieldGroup}>
-                  <span className={styles.fieldLabel}>Última actualización</span>
-                  <p className={styles.fieldValue}>{data.history.lastUpdate}</p>
+                  <span className={styles.fieldLabel}>Vacunas</span>
+                  <p className={styles.fieldValue}>{data.history.vaccine || 'N/A'}</p>
                 </div>
               </>
             ) : (
@@ -84,7 +85,13 @@ export const MedicalHistoryPage = () => {
             <p className={styles.petDetails}>
               {data.pet.age} años · {data.pet.weight} kg · Refugio: {data.pet.shelter}
             </p>
-            <button className={styles.buttonOutline}>Ver en plataforma</button>
+            <button
+              type="button"
+              className={styles.buttonOutline}
+              onClick={() => navigate(`/pets/${petId || 1}/reviews`)}
+            >
+              Ver en plataforma
+            </button>
           </div>
         </div>
       )}

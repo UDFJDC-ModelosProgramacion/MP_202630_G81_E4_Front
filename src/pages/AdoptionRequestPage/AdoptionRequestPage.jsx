@@ -5,7 +5,7 @@ import Button from '../../components/Button/Button'
 import Card from '../../components/Card/Card'
 import ScreenState from '../../components/ScreenState/ScreenState'
 import { CURRENT_USER } from '../../config/currentUser'
-import { getAdopter } from '../../services/adopterService'
+import { useCurrentUser } from '../../context/useCurrentUser'
 import {
   REQUEST_STATUS,
   createAdoptionRequest,
@@ -23,9 +23,13 @@ const STATUS_TONE = {
   [REQUEST_STATUS.CANCELLED]: 'neutral',
 }
 
+// 'DISPONIBLE' -> 'Disponible'
+function statusLabel(status) {
+  return status ? status.charAt(0) + status.slice(1).toLowerCase() : 'Sin estado'
+}
+
 function petLabel(pet) {
-  const status = pet.adoptionStatus === 'DISPONIBLE' ? 'Disponible' : 'Adoptada'
-  return `${pet.name} · ${pet.breed} · ${pet.age} años · ${pet.shelter} · ${status}`
+  return `${pet.name} · ${pet.breed} · ${pet.age} años · ${pet.shelter} · ${statusLabel(pet.adoptionStatus)}`
 }
 
 // HU02 - Registrar solicitud de adopción.
@@ -34,8 +38,8 @@ function petLabel(pet) {
 export default function AdoptionRequestPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { user } = useCurrentUser()
   const [loadState, setLoadState] = useState('loading')
-  const [adopter, setAdopter] = useState(null)
   const [pets, setPets] = useState([])
   const [requests, setRequests] = useState([])
   const [form, setForm] = useState({
@@ -48,10 +52,9 @@ export default function AdoptionRequestPage() {
 
   useEffect(() => {
     let active = true
-    Promise.all([getAdopter(ADOPTER_ID), listPets(), listAdoptionRequests(ADOPTER_ID)])
-      .then(([loadedAdopter, loadedPets, loadedRequests]) => {
+    Promise.all([listPets(), listAdoptionRequests(ADOPTER_ID)])
+      .then(([loadedPets, loadedRequests]) => {
         if (!active) return
-        setAdopter(loadedAdopter)
         setPets(loadedPets)
         setRequests(loadedRequests)
         setLoadState('ready')
@@ -121,7 +124,7 @@ export default function AdoptionRequestPage() {
               <label htmlFor="request-adopter">Adoptante</label>
               <input
                 id="request-adopter"
-                value={`${adopter.name} (ID ${adopter.id})`}
+                value={`${user.name} (ID ${ADOPTER_ID})`}
                 readOnly
               />
             </div>

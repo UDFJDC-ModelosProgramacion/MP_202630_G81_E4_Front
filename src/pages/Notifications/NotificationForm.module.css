@@ -1,0 +1,25 @@
+.field {
+  margin-bottom: var(--spacing);
+}
+
+.error {
+  margin: 0.25rem 0 0;
+  color: var(--color-danger);
+  font-size: 0.9rem;
+}
+
+.success {
+  color: var(--badge-success-text);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.note {
+  margin: var(--spacing) 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}

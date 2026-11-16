@@ -27,7 +27,7 @@ export default function FollowUpDetail() {
         if (!cancelled) setLoading(false)
       }
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     void load()
     return () => {
       cancelled = true
@@ -71,7 +71,7 @@ export default function FollowUpDetail() {
             <dd>{followUp.date}</dd>
           </div>
           <div className={styles.item}>
-            <dt>Estado</dt>
+            <dt>Condición de la mascota</dt>
             <dd>
               <span className={`${styles.badge} ${styles[`status_${followUp.status}`] || ''}`}>
                 {followUp.status}

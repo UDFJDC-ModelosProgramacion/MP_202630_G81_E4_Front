@@ -1,18 +1,25 @@
-const API_URL = 'http://localhost:8080';
+import { api, ApiError } from './apiClient'
 
+// El back no tiene GET /pets/{id}/events: los eventos vienen anidados en el
+// PetDetailDTO (GET /pets/{id}).
 export const getPetDetailsAndEvents = async (petId) => {
-  const response = await fetch(`${API_URL}/pets/${petId}/events`);
-  if (response.status === 404) throw new Error('La mascota indicada no fue encontrada.');
-  if (!response.ok) throw new Error('Error al consultar eventos.');
-  return await response.json(); // { pet: { status: 'Vivo', ... }, events: [...] }
-};
+  try {
+    const dto = await api.get(`/pets/${petId}`)
+    return {
+      pet: {
+        id: dto.id,
+        name: dto.name,
+        healthStatus: dto.healthStatus,
+      },
+      events: dto.events ?? [],
+    }
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      throw new ApiError(404, 'La mascota indicada no fue encontrada.')
+    }
+    throw error
+  }
+}
 
-export const savePetEvent = async (petId, eventData) => {
-  const response = await fetch(`${API_URL}/pets/${petId}/events`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(eventData),
-  });
-  if (!response.ok) throw new Error('Error al registrar el evento.');
-  return await response.json();
-};
+export const savePetEvent = async (petId, eventData) =>
+  api.post(`/pets/${petId}/events`, eventData)

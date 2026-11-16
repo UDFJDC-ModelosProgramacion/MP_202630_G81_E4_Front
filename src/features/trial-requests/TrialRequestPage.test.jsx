@@ -1,4 +1,3 @@
-
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, waitFor, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -13,16 +12,16 @@ vi.mock('../../services/shelterService', () => ({
   getShelters: vi.fn(),
 }))
 
-vi.mock('../../api/trialRequests', () => ({
-  trialRequestsApi: {
-    list: vi.fn(),
-    create: vi.fn(),
-  },
+vi.mock('../../services/trialRequestService', () => ({
+  listTrialRequests: vi.fn(),
+  createTrialRequest: vi.fn(),
 }))
 
 import { getAvailablePets } from '../../services/petService'
 import { getShelters } from '../../services/shelterService'
-import { trialRequestsApi } from '../../api/trialRequests'
+import { listTrialRequests, createTrialRequest } from '../../services/trialRequestService'
+
+const trialRequestsApi = { list: listTrialRequests, create: createTrialRequest }
 
 const mockPets = [
   {
@@ -235,7 +234,7 @@ describe('TrialRequestPage', () => {
         {
           id: 10,
           status: 'ACTIVA',
-          adopter: { id: 12 },
+          adopter: { id: CURRENT_USER.adopterId },
           pet: { id: 2 },
         },
       ],
@@ -277,7 +276,7 @@ describe('TrialRequestPage', () => {
         {
           id: 12,
           status: 'FINALIZADA',
-          adopter: { id: 12 },
+          adopter: { id: CURRENT_USER.adopterId },
           pet: { id: 1 },
         },
       ],
@@ -327,7 +326,7 @@ describe('TrialRequestPage', () => {
       expect.objectContaining({
         status: 'ACTIVA',
         description: expect.any(String),
-        adopter: { id: 12 },
+        adopter: { id: CURRENT_USER.adopterId },
         shelter: { id: 1 },
         pet: { id: 1 },
       }),

@@ -1,105 +1,45 @@
-import { CURRENT_USER } from '../config/currentUser'
+import { api } from './apiClient'
 
-// Sample data. When the back is connected, replace each function body
-// with a fetch to /api/... and keep the same signatures.
-const NOT_FOUND = 'Notificación no encontrada'
-const NOT_RECIPIENT_READ = 'Solo el usuario destinatario puede marcar la notificación como leída.'
-const NOT_RECIPIENT_DELETE = 'Solo el usuario destinatario puede eliminar la notificación.'
-const NOT_READ = 'Solo se puede eliminar una notificación leída.'
+// GET devuelve NotificationDetailDTO (user, adoption y pet anidados).
+// Se traduce a la forma que ya usa la pantalla.
+const toNotification = (dto) => ({
+  id: dto.id,
+  userId: dto.user?.id ?? null,
+  channel: dto.channel,
+  content: dto.content,
+  date: dto.date,
+  read: dto.read,
+  adoption: dto.adoption ? { id: dto.adoption.id } : null,
+  pet: dto.pet ? { id: dto.pet.id, name: dto.pet.name } : null,
+})
 
-const OTHER_USER_ID = CURRENT_USER.userId + 1
-
-const minutesAgo = (minutes) => new Date(Date.now() - minutes * 60 * 1000).toISOString()
-
-let notifications = [
-  {
-    id: 1,
-    userId: CURRENT_USER.userId,
-    channel: 'email',
-    content: 'Tu solicitud de adopción de Luna fue aprobada',
-    date: minutesAgo(10),
-    read: false,
-    adoption: { id: 12 },
-    pet: null,
-  },
-  {
-    id: 2,
-    userId: CURRENT_USER.userId,
-    channel: 'push',
-    content: 'Tu periodo de prueba con Max finaliza mañana',
-    date: minutesAgo(180),
-    read: false,
-    adoption: null,
-    pet: { id: 2, name: 'Max' },
-  },
-  {
-    id: 3,
-    userId: CURRENT_USER.userId,
-    channel: 'sms',
-    content: 'Recordatorio: seguimiento veterinario programado',
-    date: minutesAgo(26 * 60),
-    read: true,
-    adoption: { id: 12 },
-    pet: null,
-  },
-  {
-    id: 4,
-    userId: CURRENT_USER.userId,
-    channel: 'push',
-    content: 'Se registró tu reseña de Luna',
-    date: minutesAgo(50 * 60),
-    read: true,
-    adoption: null,
-    pet: { id: 1, name: 'Luna' },
-  },
-  {
-    id: 5,
-    userId: OTHER_USER_ID,
-    channel: 'email',
-    content: 'Notificación de otro usuario',
-    date: minutesAgo(30),
-    read: false,
-    adoption: null,
-    pet: null,
-  },
-]
-
-const respond = (value) => new Promise((resolve) => setTimeout(() => resolve(value), 300))
-
-const fail = (message) =>
-  new Promise((_, reject) => setTimeout(() => reject(new Error(message)), 300))
-
-export function listNotifications(userId) {
-  const own = notifications
-    .filter((notification) => notification.userId === userId)
-    .sort((a, b) => b.date.localeCompare(a.date))
-  return respond(own)
+export const listNotifications = async (userId) => {
+  const data = await api.get(`/users/${userId}/notifications`)
+  return data.map(toNotification)
 }
 
-export function markAsRead(notificationId, userId) {
-  const notification = notifications.find((item) => item.id === notificationId)
-  if (!notification) {
-    return fail(NOT_FOUND)
+// PUT devuelve el DTO básico (sin user/adoption/pet), así que solo
+// se devuelven esos campos. El body se ignora en el back, pero se manda {}.
+export const markAsRead = async (notificationId, userId) => {
+  const dto = await api.put(`/notifications/${notificationId}`, {}, { userId })
+  return {
+    id: dto.id,
+    channel: dto.channel,
+    content: dto.content,
+    date: dto.date,
+    read: dto.read,
   }
-  if (notification.userId !== userId) {
-    return fail(NOT_RECIPIENT_READ)
-  }
-  const updated = { ...notification, read: true }
-  notifications = notifications.map((item) => (item.id === notificationId ? updated : item))
-  return respond(updated)
 }
 
-export function deleteNotification(notificationId, userId) {
-  const notification = notifications.find((item) => item.id === notificationId)
-  if (!notification) {
-    return fail(NOT_FOUND)
-  }
-  if (notification.userId !== userId) {
-    return fail(NOT_RECIPIENT_DELETE)
-  }
-  if (!notification.read) {
-    return fail(NOT_READ)
-  }
-  notifications = notifications.filter((item) => item.id !== notificationId)
-  return respond()
-}
+export const deleteNotification = (notificationId, userId) =>
+  api.delete(`/notifications/${notificationId}`, { userId })
+
+const toCreateBody = ({ userId, adoptionId, petId, channel, content }) => ({
+  channel,
+  content: content.trim(),
+  user: { id: Number(userId) },
+  adoption: { id: Number(adoptionId) },
+  ...(petId ? { pet: { id: Number(petId) } } : {}),
+})
+
+export const createNotification = (data) => api.post('/notifications', toCreateBody(data))

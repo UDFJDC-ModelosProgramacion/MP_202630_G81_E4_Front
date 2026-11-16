@@ -9,18 +9,21 @@ export const ManageMedicalHistoryPage = () => {
   const [originalSterilized, setOriginalSterilized] = useState(false);
   const [disease, setDisease] = useState('');
   const [treatment, setTreatment] = useState('');
-  const [isUpdate, setIsUpdate] = useState(false);
+  const [historyId, setHistoryId] = useState(null);
+  const [vaccine, setVaccine] = useState(undefined);
   const [errors, setErrors] = useState([]);
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
     getMedicalHistory(petId || 1).then((data) => {
       if (data && data.history) {
-        setIsUpdate(true);
+        setHistoryId(data.history.id);
         setIsSterilized(data.history.isSterilized ? 'Si' : 'No');
         setOriginalSterilized(data.history.isSterilized);
         setDisease(data.history.diseases || '');
         setTreatment(data.history.treatment || '');
+        // Se conserva la vacuna existente para no borrarla en un PUT
+        setVaccine(data.history.vaccine);
       }
     }).catch(err => setErrors([err.message]));
   }, [petId]);
@@ -46,13 +49,21 @@ export const ManageMedicalHistoryPage = () => {
       await saveMedicalHistory(petId || 1, {
         isSterilized: isSterilized === 'Si',
         diseases: disease,
-        treatment: treatment
-      }, isUpdate);
+        treatment: treatment,
+        vaccine: vaccine
+      }, historyId);
       setSuccess('Historial guardado exitosamente.');
       setErrors([]);
     } catch (error) {
       setErrors([error.message]);
     }
+  };
+
+  const handleCancel = () => {
+    setDisease('');
+    setTreatment('');
+    setSuccess('');
+    setErrors([]);
   };
 
   return (
@@ -77,7 +88,7 @@ export const ManageMedicalHistoryPage = () => {
           </div>
           <div className={styles.buttonContainer}>
             <button type="submit" className={styles.btnPrimary}>Guardar</button>
-            <button type="button" className={styles.btnSecondary}>Cancelar</button>
+            <button type="button" className={styles.btnSecondary} onClick={handleCancel}>Cancelar</button>
           </div>
         </form>
         {success && <p className={styles.successText}>{success}</p>}

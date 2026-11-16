@@ -32,7 +32,7 @@ export const PetEventsPage = () => {
     
     const selectedDate = new Date(date);
     const today = new Date();
-    if ((type === 'Reporte médico' || type === 'Incidente') && selectedDate > today) {
+    if ((type === 'Reporte Médico' || type === 'Incidente') && selectedDate > today) {
       return setError("La fecha no puede ser futura para reportes médicos o incidentes.");
     }
 
@@ -45,6 +45,13 @@ export const PetEventsPage = () => {
     } catch (err) {
       setError(err.message);
     }
+  };
+
+  const handleCancel = () => {
+    setType('');
+    setDate('');
+    setDescription('');
+    setError('');
   };
 
   return (
@@ -78,7 +85,7 @@ export const PetEventsPage = () => {
             <label className={styles.label} htmlFor="type">Tipo *</label>
             <select id="type" className={styles.select} value={type} onChange={e => setType(e.target.value)}>
               <option value="">Seleccione...</option>
-              <option value="Reporte médico">Reporte médico</option>
+              <option value="Reporte Médico">Reporte Médico</option>
               <option value="Incidente">Incidente</option>
               <option value="Otro">Otro</option>
             </select>
@@ -96,7 +103,7 @@ export const PetEventsPage = () => {
           
           <div className={styles.buttonContainer}>
             <button type="submit" className={styles.btnPrimary}>Registrar</button>
-            <button type="button" className={styles.btnSecondary}>Cancelar</button>
+            <button type="button" className={styles.btnSecondary} onClick={handleCancel}>Cancelar</button>
           </div>
         </form>
       </div>
