@@ -234,7 +234,7 @@ describe('TrialRequestPage', () => {
         {
           id: 10,
           status: 'ACTIVA',
-          adopter: { id: 12 },
+          adopter: { id: CURRENT_USER.adopterId },
           pet: { id: 2 },
         },
       ],
@@ -276,7 +276,7 @@ describe('TrialRequestPage', () => {
         {
           id: 12,
           status: 'FINALIZADA',
-          adopter: { id: 12 },
+          adopter: { id: CURRENT_USER.adopterId },
           pet: { id: 1 },
         },
       ],
@@ -326,7 +326,7 @@ describe('TrialRequestPage', () => {
       expect.objectContaining({
         status: 'ACTIVA',
         description: expect.any(String),
-        adopter: { id: 12 },
+        adopter: { id: CURRENT_USER.adopterId },
         shelter: { id: 1 },
         pet: { id: 1 },
       }),
