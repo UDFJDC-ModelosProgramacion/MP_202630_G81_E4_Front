@@ -3,8 +3,13 @@ import Button from '../../components/Button/Button'
 import Card from '../../components/Card/Card'
 import ScreenState from '../../components/ScreenState/ScreenState'
 import { CURRENT_USER } from '../../config/currentUser'
-import { deleteAdopter, getAdopter, updateAdopter } from '../../services/adopterService'
-import { listAdoptionRequests } from '../../services/adoptionRequestService'
+import { useCurrentUser } from '../../context/useCurrentUser'
+import {
+  deleteAdopter,
+  getAdopter,
+  getAdopterSummary,
+  updateAdopter,
+} from '../../services/adopterService'
 import styles from './ProfilePage.module.css'
 
 function initialsOf(name) {
@@ -18,21 +23,22 @@ function initialsOf(name) {
 
 // HU12 - Gestionar información del adoptante.
 export default function ProfilePage({ adopterId = CURRENT_USER.adopterId }) {
+  const { user } = useCurrentUser()
   const [loadState, setLoadState] = useState('loading')
   const [loadError, setLoadError] = useState('')
   const [adopter, setAdopter] = useState(null)
-  const [requestsCount, setRequestsCount] = useState(0)
+  const [summary, setSummary] = useState({ requestsCount: 0, adoptionsCount: 0, reviewsCount: 0 })
   const [form, setForm] = useState({ address: '', phone: '', occupation: '' })
   const [feedback, setFeedback] = useState(null)
   const [deleted, setDeleted] = useState(false)
 
   useEffect(() => {
     let active = true
-    Promise.all([getAdopter(adopterId), listAdoptionRequests(adopterId)])
-      .then(([loadedAdopter, requests]) => {
+    Promise.all([getAdopter(adopterId), getAdopterSummary(adopterId)])
+      .then(([loadedAdopter, loadedSummary]) => {
         if (!active) return
         setAdopter(loadedAdopter)
-        setRequestsCount(requests.length)
+        setSummary(loadedSummary)
         setForm({
           address: loadedAdopter.address,
           phone: loadedAdopter.phone,
@@ -91,7 +97,8 @@ export default function ProfilePage({ adopterId = CURRENT_USER.adopterId }) {
     return <ScreenState state="empty" message="Tu registro de adoptante fue eliminado." />
   }
 
-  const hasRecords = requestsCount > 0 || adopter.adoptionsCount > 0 || adopter.reviewsCount > 0
+  const { requestsCount, adoptionsCount, reviewsCount } = summary
+  const hasRecords = requestsCount > 0 || adoptionsCount > 0 || reviewsCount > 0
 
   return (
     <>
@@ -104,9 +111,9 @@ export default function ProfilePage({ adopterId = CURRENT_USER.adopterId }) {
         <Card>
           <div className={styles.summary}>
             <div className={styles.avatar} aria-hidden="true">
-              {initialsOf(adopter.name)}
+              {initialsOf(user.name)}
             </div>
-            <h2 className={styles.name}>{adopter.name}</h2>
+            <h2 className={styles.name}>{user.name}</h2>
             <p className={styles.role}>Adoptante · ID {adopter.id}</p>
           </div>
           <dl className={styles.stats}>
@@ -115,11 +122,11 @@ export default function ProfilePage({ adopterId = CURRENT_USER.adopterId }) {
               <dt>Solicitudes</dt>
             </div>
             <div>
-              <dd>{adopter.adoptionsCount}</dd>
+              <dd>{adoptionsCount}</dd>
               <dt>Adopciones</dt>
             </div>
             <div>
-              <dd>{adopter.reviewsCount}</dd>
+              <dd>{reviewsCount}</dd>
               <dt>Reseñas</dt>
             </div>
           </dl>
