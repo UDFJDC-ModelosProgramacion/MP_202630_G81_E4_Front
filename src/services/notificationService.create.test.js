@@ -29,6 +29,7 @@ describe('createNotification', () => {
       content: 'Tu solicitud fue aprobada',
       user: { id: 5 },
       adoption: { id: 12 },
+      date: expect.any(String),
     })
   })
 
@@ -37,12 +38,13 @@ describe('createNotification', () => {
 
     await createNotification({ ...data, petId: '2' })
 
-    expect(api.post).toHaveBeenCalledWith('/notifications', {
+        expect(api.post).toHaveBeenCalledWith('/notifications', {
       channel: 'email',
       content: 'Tu solicitud fue aprobada',
-      user: { id: 5 },
+      date: expect.any(String),
       adoption: { id: 12 },
       pet: { id: 2 },
+      user: { id: 5 },
     })
   })
 
