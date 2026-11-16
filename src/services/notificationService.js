@@ -42,4 +42,8 @@ const toCreateBody = ({ userId, adoptionId, petId, channel, content }) => ({
   ...(petId ? { pet: { id: Number(petId) } } : {}),
 })
 
-export const createNotification = (data) => api.post('/notifications', toCreateBody(data))
+export const createNotification = (data) =>
+  api.post('/notifications', {
+    ...toCreateBody(data),
+    date: new Date().toISOString(),
+  })
