@@ -2,8 +2,16 @@
 // When a real login exists, replace this constant with the logged-in user.
 // userId    -> id in the "users" resource (used by messages, HU17)
 // adopterId -> id in the "adopters" resource (used by the profile and requests, HU12 and HU02)
+// role      -> active UI role ('ADOPTER' | 'SHELTER' | 'VET')
+export const ROLES = {
+  ADOPTER: 'ADOPTER',
+  SHELTER: 'SHELTER',
+  VET: 'VET',
+}
+
 export const CURRENT_USER = {
   userId: 12,
   adopterId: 12,
   name: 'María Gómez',
+  role: ROLES.ADOPTER,
 }

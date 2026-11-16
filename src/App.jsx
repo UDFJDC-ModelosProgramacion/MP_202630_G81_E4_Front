@@ -1,6 +1,7 @@
-
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
+import RoleRoute from './components/RoleRoute/RoleRoute'
+import { ROLES } from './config/currentUser'
 import AdoptionRequestPage from './pages/AdoptionRequestPage/AdoptionRequestPage'
 import NotificationsPage from './pages/Notifications/NotificationsPage'
 import SendNotificationPage from './pages/Notifications/SendNotificationPage'
@@ -30,33 +31,32 @@ export default function App() {
         <Route path="/pets" element={<PetsPage />} />
         <Route path="/pets/:petId/reviews" element={<PetReviewsPage />} />
         <Route path="/pets/:petId/medical-history" element={<MedicalHistoryPage />} />
-        <Route path="/pets/:petId/manage-medical-history" element={<ManageMedicalHistoryPage />} />
         <Route path="/pets/:petId/events" element={<PetEventsPage />} />
         <Route path="/adoptions" element={<AdoptionsPage />} />
-        <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
-        <Route path="/shelters" element={<ShelterManager />} />
-        <Route path="/shelters/:shelterId/veterinarians" element={<VeterinariansPage />} />
+        <Route path="/adoptions/new" element={<AdoptionRequestPage />} />
+        <Route path="/trial-requests/new" element={<TrialRequestPage />} />
         <Route path="/notifications" element={<NotificationsPage />} />
-        <Route path="/notifications/new" element={<SendNotificationPage />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/adoptions/new" element={<AdoptionRequestPage />} />
 
-        <Route
-          path="/trial-requests/new"
-          element={<TrialRequestPage />}
-        />
+        {/* Rutas de gestión: Refugio */}
+        <Route element={<RoleRoute allowedRoles={[ROLES.SHELTER]} />}>
+          <Route path="/adoption-requests" element={<AdoptionRequestsPage />} />
+          <Route path="/trial-requests" element={<TrialRequestsManagementPage />} />
+          <Route path="/shelters" element={<ShelterManager />} />
+          <Route path="/shelters/:shelterId/veterinarians" element={<VeterinariansPage />} />
+          <Route path="/notifications/new" element={<SendNotificationPage />} />
+        </Route>
 
-        <Route
-          path="/trial-requests"
-          element={<TrialRequestsManagementPage />}
-        />
-
-        <Route path="/follow-ups/new" element={<FollowUpForm />} />
-        <Route path="/follow-ups/:id/edit" element={<FollowUpForm />} />
-        {/* HU08 - Consultar seguimientos veterinarios (Juan David Parrado) */}
-        <Route path="/follow-ups" element={<FollowUpList />} />
-        <Route path="/follow-ups/:id" element={<FollowUpDetail />} />
+        {/* Rutas de gestión: Veterinario */}
+        <Route element={<RoleRoute allowedRoles={[ROLES.VET]} />}>
+          <Route path="/pets/:petId/manage-medical-history" element={<ManageMedicalHistoryPage />} />
+          <Route path="/follow-ups/new" element={<FollowUpForm />} />
+          <Route path="/follow-ups/:id/edit" element={<FollowUpForm />} />
+          {/* HU08 - Consultar seguimientos veterinarios (Juan David Parrado) */}
+          <Route path="/follow-ups" element={<FollowUpList />} />
+          <Route path="/follow-ups/:id" element={<FollowUpDetail />} />
+        </Route>
       </Route>
     </Routes>
   )
