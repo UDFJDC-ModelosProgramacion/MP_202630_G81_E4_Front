@@ -88,7 +88,7 @@ export default function MessagesPage() {
 
   async function handleDelete() {
     try {
-      await deleteMessage(selectedId, ME)
+      await deleteMessage(selectedId)
       setMessages((current) => current.filter((item) => item.id !== selectedId))
       setSelectedId(null)
       setFeedback({ type: 'success', text: 'Mensaje eliminado.' })
